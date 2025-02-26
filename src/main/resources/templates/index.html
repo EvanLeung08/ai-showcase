@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Generate PPT</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="monokai">
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header text-center">
+                    <h1>Evan-AI Auto-PPT Generator</h1>
+                </div>
+                <div class="card-body">
+                    <form id="pptForm" th:action="@{/generate}" method="post" onsubmit="return validateForm()">
+                        <div class="form-group">
+                            <label for="prompt">Enter Prompt:</label>
+                            <textarea id="prompt" name="prompt" class="form-control" rows="10" required></textarea>
+                            <div class="invalid-feedback">
+                                Please enter a prompt.
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="theme">Select Theme:</label>
+                            <select id="theme" class="form-control" onchange="changeTheme()">
+                                <option value="default">Default</option>
+                                <option value="dark">Dark</option>
+                                <option value="light">Light</option>
+                                <option value="monokai" selected>Monokai</option>
+                            </select>
+                        </div>
+                        <button type="button" id="previewButton" class="btn btn-primary btn-block" onclick="previewPpt()">Preview</button>
+                        <button type="submit" id="generateButton" class="btn btn-success btn-block">Generate</button>
+                    </form>
+                    <div id="progressContainer" class="mt-3" style="display: none;">
+                        <div class="progress">
+                            <div id="progressBar" class="progress-bar" role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+                        </div>
+                        <div id="progressStatus" class="text-center mt-2"></div>
+                    </div>
+                    <div id="pptPreview" class="mt-3" style="max-height: 500px; overflow-y: scroll;"></div>
+                    <button id="downloadButton" class="btn btn-secondary btn-block mt-3" style="display: none;" onclick="downloadPpt()">Download</button>
+                    <div id="messageContainer" class="alert alert-danger mt-3" style="display: none;">
+                        <p id="messageText"></p>
+                    </div>
+                    <div th:if="${message}" class="alert alert-success mt-3">
+                        <p th:text="${message}"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<footer class="footer text-center mt-5">
+    <p>&copy; 2025 Evan Leung</p>
+</footer>
+<script>
+    let isRequestInProgress = false;
+
+    function validateForm() {
+        var prompt = document.getElementById("prompt");
+        if (prompt.value.trim() === "") {
+            prompt.classList.add("is-invalid");
+            return false;
+        }
+        prompt.classList.remove("is-invalid");
+        return true;
+    }
+
+    function changeTheme() {
+        var theme = document.getElementById("theme").value;
+        document.body.className = theme;
+    }
+
+    function previewPpt() {
+        if (isRequestInProgress) {
+            showMessage("Please wait for the current request to complete.");
+            return;
+        }
+
+        var prompt = document.getElementById("prompt").value;
+        var progressBar = document.getElementById("progressBar");
+        var progressStatus = document.getElementById("progressStatus");
+        var progressContainer = document.getElementById("progressContainer");
+        var previewButton = document.getElementById("previewButton");
+        var generateButton = document.getElementById("generateButton");
+
+        isRequestInProgress = true;
+        progressContainer.style.display = "block";
+        progressBar.style.width = "0%";
+        progressBar.setAttribute("aria-valuenow", 0);
+        progressStatus.innerText = "Preparing preview... This may take 1-2 minutes.";
+        previewButton.disabled = true;
+        generateButton.disabled = true;
+
+        fetch('/preview', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: new URLSearchParams({prompt: prompt})
+        })
+        .then(response => response.json())
+        .then(images => {
+            var pptPreview = document.getElementById("pptPreview");
+            pptPreview.innerHTML = "";
+            images.forEach((image, index) => {
+                var img = document.createElement("img");
+                img.src = "data:image/png;base64," + image;
+                img.className = "img-fluid";
+                pptPreview.appendChild(img);
+
+                // Update progress bar
+                var progress = ((index + 1) / images.length) * 100;
+                progressBar.style.width = progress + "%";
+                progressBar.setAttribute("aria-valuenow", progress);
+                progressStatus.innerText = `Progress: ${Math.round(progress)}%`;
+            });
+            progressStatus.innerText = "Preview completed!";
+            document.getElementById("downloadButton").style.display = "block";
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            progressStatus.innerText = "Error occurred!";
+        })
+        .finally(() => {
+            isRequestInProgress = false;
+            previewButton.disabled = false;
+            generateButton.disabled = false;
+        });
+    }
+
+    function downloadPpt() {
+        if (isRequestInProgress) {
+            showMessage("Please wait for the current request to complete.");
+            return;
+        }
+
+        showMessage("Generating PPT... This may take 1-2 minutes.");
+
+        var prompt = document.getElementById("prompt").value;
+        var form = document.createElement("form");
+        form.method = "POST";
+        form.action = "/generate";
+        form.style.display = "none";
+
+        var input = document.createElement("input");
+        input.type = "hidden";
+        input.name = "prompt";
+        input.value = prompt;
+        form.appendChild(input);
+
+        document.body.appendChild(form);
+        form.submit();
+        document.body.removeChild(form);
+    }
+
+    function showMessage(message) {
+        var messageContainer = document.getElementById("messageContainer");
+        var messageText = document.getElementById("messageText");
+        messageText.innerText = message;
+        messageContainer.style.display = "block";
+        setTimeout(() => {
+            messageContainer.style.display = "none";
+        }, 3000);
+    }
+</script>
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
