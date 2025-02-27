@@ -37,24 +37,14 @@ public class AutoPptGenerator {
         StringBuilder aggregatedContent = new StringBuilder();
         int part = 1;
         boolean hasMoreContent = true;
-        String sample= "Deliberate\n" +
-                "- 助记: de(向下) + liber(自由) + ate(表使动) -> 向下给予自由，深思熟虑\n" +
-                "- 中文解释: 故意的，深思熟虑的\n" +
-                "- 音标: [dɪˈlɪbərɪt]\n" +
-                "- 例句: She made a deliberate choice to study abroad.\n" +
-                "- 前缀后缀词根: de-(向下), liber(自由), -ate(使动)\n" +
-                "- 相同词根词缀的单词: deliberately, deliberateness\n" +
-                "- 反义词: accidental, random\n" +
-                "- 同义词: intentional, calculated\n" +
-                "- 近义词: planned, purposeful\n" +
-                "- 常见词组搭配: make a deliberate decision/choice\n";
+
         while (hasMoreContent) {
             String requestBody = String.format("""
         {
             "model": "4.0Ultra",
             "messages": [
             {"role": "system", "content": "你是一个单词记忆专家和世界记忆大师，你的任务是帮助用户记忆英语单词。"},
-                {"role": "user", "content": "%s\\n请用记忆大师的方式，对输入的每个英语单词提供 1.记忆大师助记(即拼音编码+前缀后缀+以熟记生等方法自由组合结合联想记忆)、2.中文解释、3.音标、4.例句、5.涉及的前缀后缀和词根、6.相同词根词缀的单词、7.反义词、8.同义词、9.近义词、10.常见词组搭配等,\\n请用Markdown格式输出PPT内容，尽可能详细，用'---'分隔每页幻灯片。请提供第%d部分。"}
+                {"role": "user", "content": "%s\\n请用记忆大师的方式，先使用输入的全部单词创作一篇中英对照的英语故事，方便记忆，然后对输入的每个英语单词提供 1.记忆大师助记(即词根词缀+以熟记生等方法自由组合结合联想记忆)、2.中文解释、3.音标、4.例句、5.涉及的前缀后缀和词根、6.相同词根词缀的单词、7.反义词、8.同义词、9.近义词、10.常见词组搭配等。\\n请用Markdown格式输出PPT内容，尽可能详细，用'---'分隔每页幻灯片。请提供第%d部分。"}
             ],
             "stream": false,
             "temperature": 0.7

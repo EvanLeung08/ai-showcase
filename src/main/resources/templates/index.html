@@ -14,19 +14,19 @@
         <div class="col-md-8">
             <div class="card">
                 <div class="card-header text-center">
-                    <h1>Evan-AI Auto-PPT Generator</h1>
+                    <h1>AI 单词记忆大师</h1>
                 </div>
                 <div class="card-body">
                     <form id="pptForm" th:action="@{/generate}" method="post" onsubmit="return validateForm()">
                         <div class="form-group">
-                            <label for="prompt">Enter Prompt:</label>
+                            <label for="prompt">请输入要记忆的单词:</label>
                             <textarea id="prompt" name="prompt" class="form-control" rows="10" required></textarea>
                             <div class="invalid-feedback">
                                 Please enter a prompt.
                             </div>
                         </div>
                         <div class="form-group">
-                            <label for="theme">Select Theme:</label>
+                            <label for="theme">选择主题风格:</label>
                             <select id="theme" class="form-control" onchange="changeTheme()">
                                 <option value="default">Default</option>
                                 <option value="dark">Dark</option>
