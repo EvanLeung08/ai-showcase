@@ -26,6 +26,13 @@
                             </div>
                         </div>
                         <div class="form-group">
+                            <label for="generationType">选择生成方式:</label>
+                            <select id="generationType" name="generationType" class="form-control">
+                                <option value="story">单词故事</option>
+                                <option value="mnemonics">单词助记</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
                             <label for="theme">选择主题风格:</label>
                             <select id="theme" class="form-control" onchange="changeTheme()">
                                 <option value="default">Default</option>
@@ -35,7 +42,8 @@
                             </select>
                         </div>
                         <button type="button" id="previewButton" class="btn btn-primary btn-block" onclick="previewPpt()">Preview</button>
-                        <button type="submit" id="generateButton" class="btn btn-success btn-block">Generate</button>
+                        <button type="submit" id="generateButton" class="btn btn-success btn-block" onclick="setFormAction('/generate')">Generate PPT</button>
+                        <button type="submit" id="generatePdfButton" class="btn btn-danger btn-block" onclick="setFormAction('/generatePdf')">Generate PDF</button>
                     </form>
                     <div id="progressContainer" class="mt-3" style="display: none;">
                         <div class="progress">
@@ -169,6 +177,10 @@
             messageContainer.style.display = "none";
         }, 3000);
     }
+        function setFormAction(action) {
+        document.getElementById('pptForm').action = action;
+    }
+
 </script>
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>

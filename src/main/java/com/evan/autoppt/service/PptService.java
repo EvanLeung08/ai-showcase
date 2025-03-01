@@ -21,16 +21,10 @@ public class PptService {
 
     private ByteArrayOutputStream pptContent;
 
-    public void generatePpt(String prompt, OutputStream outputStream) throws Exception {
-        if (pptContent == null) {
-            generatePptContent(prompt, null);
-        }
-        pptContent.writeTo(outputStream);
-    }
 
-    public List<byte[]> convertPptToImages(String prompt) throws Exception {
+    public List<byte[]> convertPptToImages(String prompt, String generationType) throws Exception {
         if (pptContent == null) {
-            generatePptContent(prompt, null);
+            generatePptContent(prompt, generationType, null);
         }
 
         try (ByteArrayInputStream bais = new ByteArrayInputStream(pptContent.toByteArray());
@@ -51,17 +45,33 @@ public class PptService {
         }
     }
 
-    private void generatePptContent(String prompt, AtomicInteger progress) throws Exception {
-        String markdownContent = AutoPptGenerator.callDeepSeekApi(prompt);
+    public void generatePpt(String prompt, String generationType, OutputStream outputStream) throws Exception {
+
+        generatePptContent(prompt, generationType, null);
+
+        pptContent.writeTo(outputStream);
+    }
+
+    public void generatePdf(String prompt, String generationType, OutputStream outputStream) throws Exception {
+        if (pptContent == null) {
+            generatePptContent(prompt, generationType, null);
+        }
+        ByteArrayOutputStream pdfContent = new ByteArrayOutputStream();
+        AutoPptGenerator.convertPptToPdf(pptContent, pdfContent);
+        pdfContent.writeTo(outputStream);
+    }
+
+    private void generatePptContent(String prompt, String generationType, AtomicInteger progress) throws Exception {
+        String markdownContent = AutoPptGenerator.callDeepSeekApi(prompt, generationType);
         List<SlideContent> slides = AutoPptGenerator.parseMarkdown(markdownContent);
 
         PptTemplate template = new PptTemplate(
                 new Color(0, 255, 255),    // Title color
                 new Color(255, 255, 255),  // Body color
                 36.0,                      // Title font size
-                24.0,                      // Body font size
-                "Arial",                   // Title font
-                "Calibri",                 // Body font
+                20.0,                      // Body font size
+                "Microsoft Sans Serif",    // Title font
+                "Microsoft Sans Serif",    // Body font
                 "pic/1.png"                // Background image path
         );
 

@@ -2,10 +2,10 @@ package com.evan.autoppt.service;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.IOException;
-import java.io.OutputStream;
+import java.io.*;
 import java.net.URI;
 import java.net.http.*;
+import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
@@ -14,6 +14,11 @@ import javax.imageio.ImageIO;
 import com.evan.autoppt.utils.PptTemplate;
 import com.evan.autoppt.utils.SlideContent;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.pdmodel.PDPageContentStream;
+import org.apache.pdfbox.pdmodel.common.PDRectangle;
+import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 import org.apache.poi.sl.usermodel.PictureData;
 import org.apache.poi.xslf.usermodel.XMLSlideShow;
 import org.apache.poi.xslf.usermodel.XSLFPictureShape;
@@ -33,24 +38,33 @@ public class AutoPptGenerator {
 
     private static final String API_ENDPOINT = "https://spark-api-open.xf-yun.com/v1/chat/completions";
 
-    public static String callDeepSeekApi(String prompt) throws Exception {
+    public static String callDeepSeekApi(String words, String generationType) throws Exception {
         StringBuilder aggregatedContent = new StringBuilder();
         int part = 1;
         boolean hasMoreContent = true;
 
+        // Read the appropriate template based on generationType
+        String exampleTemplate = readExampleTemplate(generationType);
+
         while (hasMoreContent) {
             String requestBody = String.format("""
-        {
-            "model": "4.0Ultra",
-            "messages": [
-            {"role": "system", "content": "你是一个单词记忆专家和世界记忆大师，你的任务是帮助用户记忆英语单词。"},
-                {"role": "user", "content": "%s\\n请用记忆大师的方式，先使用输入的全部单词创作一篇中英对照的英语故事，方便记忆，然后对输入的每个英语单词提供 1.记忆大师助记(即词根词缀+以熟记生等方法自由组合结合联想记忆)、2.中文解释、3.音标、4.例句、5.涉及的前缀后缀和词根、6.相同词根词缀的单词、7.反义词、8.同义词、9.近义词、10.常见词组搭配等。\\n请用Markdown格式输出PPT内容，尽可能详细，用'---'分隔每页幻灯片。请提供第%d部分。"}
-            ],
-            "stream": false,
-            "temperature": 0.7
-        }
-        """, prompt.replace("\"", "\\\""),part);
+                        {
+                            "model": "4.0Ultra",
+                            "messages": [
+                                {"role": "system", "content": "你是一个单词记忆专家和世界记忆大师，你的任务是帮助用户记忆英语单词。"},
+                                {"role": "user", "content": "%s\\n\\n 请提供第%d部分输出。"}
+                            ],
+                            "stream": false,
+                            "temperature": 0.7
+                        }
+                        """,
+                    exampleTemplate.replace("\"", "\\\"") // Escape double quotes
+                            .replace("\n", "\\n") // Escape newlines
+                            .replace("\\n-", "\\n-").replace("{{wordlist}}",words), // Preserve list structure
 
+                    part);
+
+            // Rest of the code remains unchanged...
             HttpClient client = HttpClient.newBuilder()
                     .connectTimeout(Duration.ofSeconds(120))
                     .build();
@@ -93,6 +107,22 @@ public class AutoPptGenerator {
         }
         return aggregatedContent.toString();
     }
+
+    private static String readExampleTemplate(String generationType) throws IOException {
+        String templatePath = "static/prompts/story_template.txt";
+        if ("mnemonics".equals(generationType)) {
+            templatePath = "static/prompts/words_template.txt";
+        }
+        try (InputStream inputStream = AutoPptGenerator.class.getClassLoader().getResourceAsStream(templatePath)) {
+            if (inputStream == null) {
+                throw new IOException("File not found: " + templatePath);
+            }
+            byte[] encoded = inputStream.readAllBytes();
+            return new String(encoded, StandardCharsets.UTF_8);
+        }
+    }
+
+
 
     public static List<SlideContent> parseMarkdown(String markdown) {
         List<SlideContent> slides = new ArrayList<>();
@@ -214,5 +244,46 @@ public class AutoPptGenerator {
         PictureData idx = ppt.addPicture(imageBytes, PictureData.PictureType.PNG);
         XSLFPictureShape pic = slide.createPicture(idx);
         pic.setAnchor(new java.awt.geom.Rectangle2D.Double(100, 150, 640, 480));
+    }
+
+    public static void convertPptToPdf(OutputStream pptOutputStream, OutputStream pdfOutputStream) throws IOException {
+        try (PDDocument pdfDocument = new PDDocument();
+             XMLSlideShow ppt = new XMLSlideShow(new ByteArrayInputStream(((ByteArrayOutputStream) pptOutputStream).toByteArray()))) {
+
+            for (XSLFSlide slide : ppt.getSlides()) {
+                // Use a higher resolution for the BufferedImage
+                int width = 1920;
+                int height = 1080;
+                BufferedImage slideImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+                Graphics2D graphics = slideImage.createGraphics();
+
+                // Set rendering hints for better quality
+                graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                graphics.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+                graphics.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
+                graphics.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+                graphics.setRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS, RenderingHints.VALUE_FRACTIONALMETRICS_ON);
+
+                slide.draw(graphics);
+                graphics.dispose();
+
+                PDPage pdfPage = new PDPage(new PDRectangle(width, height));
+                pdfDocument.addPage(pdfPage);
+
+                PDImageXObject pdImage = PDImageXObject.createFromByteArray(pdfDocument, convertBufferedImageToByteArray(slideImage), "slide");
+                try (PDPageContentStream contentStream = new PDPageContentStream(pdfDocument, pdfPage)) {
+                    contentStream.drawImage(pdImage, 0, 0, width, height);
+                }
+            }
+
+            pdfDocument.save(pdfOutputStream);
+        }
+    }
+
+    private static byte[] convertBufferedImageToByteArray(BufferedImage image) throws IOException {
+        try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
+            ImageIO.write(image, "png", baos);
+            return baos.toByteArray();
+        }
     }
 }
