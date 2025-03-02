@@ -1,0 +1,39 @@
+请根据以下模板为单词列表{{wordlist}}的每个{word}创造一篇中英对照的小故事，要求：
+1. 故事要围绕{word}这个单词展开，突出单词的含义和用法
+2. 故事情节生动有趣，语言通俗易懂
+3。故事中要包含{word}的分析和词根词缀分析，要能让5岁以下的孩子都能看懂
+4. 严格根据以下示例模板按照markdown格式输出PPT，用'---'分隔每页
+
+以下是示例模板：
+
+# 故事
+- **中文**：在一个神秘的森林深处，有一个古老的村庄。村庄里住着一位智慧的长者，他总是能做出{word1的中文意思}（{word1}）的决定，保护着村庄的安宁。然而，最近村庄附近出现了一些未知的危险迹象，村民们都十分担忧。长者知道，他必须凭借自己丰富的经验，去探寻这些未知的威胁，以守护村庄。一天，他在森林中发现了一块奇异的{word2的中文意思}（{word2}），这似乎是一个线索……
+- **英文**：Deep in a mysterious forest, there was an ancient village. In the village lived a wise elder who always made {word1} decisions to protect the peace of the village. However, recently there were some unknown danger signs near the village, and the villagers were very worried. The elder knew that he had to rely on his rich experience to explore these unknown threats in order to protect the village. One day, he found a strange {word2} in the forest, which seemed to be a clue...
+
+---
+
+# {word1}
+- **词根词缀**："[前缀分析]+[词根分析]+[后缀分析]"，完整解释组合含义。联想记忆：[充分利用词根词缀和以熟计生的方式构造世界记忆大师级别的生动场景联想]
+- **中文解释**：[简明中文释义]
+- **音标**：[国际音标标注]
+- **例句**：[典型例句及翻译]
+- **涉及的前缀后缀和词根**：[具体词素列表]
+- **相同词根词缀的单词**：[3-5个同源词]
+- **反义词**：[2-3个准确反义词]
+- **同义词**：[2-3个精确同义词]
+- **近义词**：[2-3个语义相近词]
+- **常见词组搭配**：[2-3个常用搭配]
+
+---
+# {word2}
+- **词根词缀**："[前缀分析]+[词根分析]+[后缀分析]"，完整解释组合含义。联想记忆：[充分利用词根词缀和以熟计生的方式构造世界记忆大师级别的生动场景联想]
+- **中文解释**：[简明中文释义]
+- **音标**：[国际音标标注]
+- **例句**：[典型例句及翻译]
+- **涉及的前缀后缀和词根**：[具体词素列表]
+- **相同词根词缀的单词**：[3-5个同源词]
+- **反义词**：[2-3个准确反义词]
+- **同义词**：[2-3个精确同义词]
+- **近义词**：[2-3个语义相近词]
+- **常见词组搭配**：[2-3个常用搭配]
+

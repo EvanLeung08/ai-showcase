@@ -43,7 +43,7 @@ public class PptController {
     @PostMapping("/generate")
     public void generatePpt(@RequestParam("prompt") String prompt, @RequestParam("generationType") String generationType, HttpServletResponse response) {
         response.setContentType("application/vnd.openxmlformats-officedocument.presentationml.presentation");
-        response.setHeader("Content-Disposition", "attachment; filename=output.pptx");
+        response.setHeader("Content-Disposition", "attachment; filename=handbook.pptx");
         try {
             String decodedPrompt = URLDecoder.decode(prompt, StandardCharsets.UTF_8.name());
             pptService.generatePpt(decodedPrompt, generationType, response.getOutputStream());
@@ -55,7 +55,7 @@ public class PptController {
     @PostMapping("/generatePdf")
     public void generatePdf(@RequestParam("prompt") String prompt, @RequestParam("generationType") String generationType, HttpServletResponse response) {
         response.setContentType("application/pdf");
-        response.setHeader("Content-Disposition", "attachment; filename=output.pdf");
+        response.setHeader("Content-Disposition", "attachment; filename=handbook.pdf");
         try {
             String decodedPrompt = URLDecoder.decode(prompt, StandardCharsets.UTF_8.name());
             pptService.generatePdf(decodedPrompt, generationType, response.getOutputStream());

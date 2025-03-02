@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>Generate PPT</title>
+    <title>Evan单词助记大师</title>
     <link rel="stylesheet" th:href="@{/css/style.css}">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
@@ -11,10 +11,10 @@
 <body class="monokai">
 <div class="container mt-5">
     <div class="row justify-content-center">
-        <div class="col-md-8">
+        <div class="col-md-8 col-sm-12">
             <div class="card">
                 <div class="card-header text-center">
-                    <h1>AI 单词记忆大师</h1>
+                    <h1>Evan单词助记大师</h1>
                 </div>
                 <div class="card-body">
                     <form id="pptForm" th:action="@{/generate}" method="post" onsubmit="return validateForm()">
@@ -29,7 +29,7 @@
                             <label for="generationType">选择生成方式:</label>
                             <select id="generationType" name="generationType" class="form-control">
                                 <option value="story">单词故事</option>
-                                <option value="mnemonics">单词助记</option>
+                                <option value="mnemonics" selected >单词助记</option>
                             </select>
                         </div>
                         <div class="form-group">
