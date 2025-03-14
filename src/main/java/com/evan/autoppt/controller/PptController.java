@@ -27,7 +27,7 @@ public class PptController {
     public List<String> previewPpt(@RequestParam("prompt") String prompt, @RequestParam("generationType") String generationType) {
         try {
             String decodedPrompt = URLDecoder.decode(prompt, StandardCharsets.UTF_8.name());
-            List<byte[]> images = pptService.convertPptToImages(decodedPrompt,generationType);
+            List<byte[]> images = pptService.convertPptToImages(decodedPrompt, generationType);
             List<String> base64Images = new ArrayList<>();
             for (byte[] image : images) {
                 base64Images.add(Base64.getEncoder().encodeToString(image));

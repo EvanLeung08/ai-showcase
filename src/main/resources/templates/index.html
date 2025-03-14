@@ -92,6 +92,7 @@
         }
 
         var prompt = document.getElementById("prompt").value;
+        var generationType = document.getElementById("generationType").value;
         var progressBar = document.getElementById("progressBar");
         var progressStatus = document.getElementById("progressStatus");
         var progressContainer = document.getElementById("progressContainer");
@@ -111,7 +112,7 @@
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded'
             },
-            body: new URLSearchParams({prompt: prompt})
+            body: new URLSearchParams({prompt: prompt, generationType: generationType})
         })
         .then(response => response.json())
         .then(images => {
