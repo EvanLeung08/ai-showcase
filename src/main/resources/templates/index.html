@@ -19,17 +19,17 @@
                 <div class="card-body">
                     <form id="pptForm" th:action="@{/generate}" method="post" onsubmit="return validateForm()">
                         <div class="form-group">
-                            <label for="prompt">请输入要记忆的单词:</label>
+                            <label for="prompt">请输入不超过5个单词，使用都好隔开:</label>
                             <textarea id="prompt" name="prompt" class="form-control" rows="10" required></textarea>
                             <div class="invalid-feedback">
-                                Please enter a prompt.
+                                Please enter up to 5 words, separated by commas.
                             </div>
                         </div>
                         <div class="form-group">
                             <label for="generationType">选择生成方式:</label>
                             <select id="generationType" name="generationType" class="form-control">
                                 <option value="story">单词故事</option>
-                                <option value="mnemonics" selected >单词助记</option>
+                                <option value="mnemonics" selected>单词助记</option>
                             </select>
                         </div>
                         <div class="form-group">
@@ -72,7 +72,8 @@
 
     function validateForm() {
         var prompt = document.getElementById("prompt");
-        if (prompt.value.trim() === "") {
+        var words = prompt.value.split(',').map(word => word.trim());
+        if (words.length > 5) {
             prompt.classList.add("is-invalid");
             return false;
         }
@@ -88,6 +89,11 @@
     function previewPpt() {
         if (isRequestInProgress) {
             showMessage("Please wait for the current request to complete.");
+            return;
+        }
+
+        if (!validateForm()) {
+            showMessage("Please enter up to 5 words, separated by commas.");
             return;
         }
 
@@ -178,10 +184,10 @@
             messageContainer.style.display = "none";
         }, 3000);
     }
-        function setFormAction(action) {
+
+    function setFormAction(action) {
         document.getElementById('pptForm').action = action;
     }
-
 </script>
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
