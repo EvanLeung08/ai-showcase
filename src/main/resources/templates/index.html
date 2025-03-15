@@ -107,7 +107,6 @@
                         <div id="progressStatus" class="text-center mt-2"></div>
                     </div>
                     <div id="pptPreview" class="mt-3" style="max-height: 500px; overflow-y: scroll;"></div>
-                    <button id="downloadButton" class="btn btn-secondary btn-block mt-3" style="display: none;" onclick="downloadPpt()">Download</button>
                     <div id="messageContainer" class="alert alert-danger mt-3" style="display: none;">
                         <p id="messageText"></p>
                     </div>
@@ -215,30 +214,6 @@
         }
     });
 
-    function downloadPpt() {
-        if (isRequestInProgress) {
-            showMessage("Please wait for the current request to complete.");
-            return;
-        }
-
-        showMessage("Generating PPT... This may take 1-2 minutes.");
-
-        var prompt = document.getElementById("prompt").value;
-        var form = document.createElement("form");
-        form.method = "POST";
-        form.action = "/generate";
-        form.style.display = "none";
-
-        var input = document.createElement("input");
-        input.type = "hidden";
-        input.name = "prompt";
-        input.value = prompt;
-        form.appendChild(input);
-
-        document.body.appendChild(form);
-        form.submit();
-        document.body.removeChild(form);
-    }
 
     function showMessage(message) {
         var messageContainer = document.getElementById("messageContainer");

@@ -38,6 +38,8 @@ public class PptController {
             return Collections.emptyList();
         }
     }
+
+
     @PostMapping("/generate")
     public void generatePpt(@RequestParam("prompt") String prompt, @RequestParam("generationType") String generationType, HttpServletResponse response) {
         response.setContentType("application/vnd.openxmlformats-officedocument.presentationml.presentation");
