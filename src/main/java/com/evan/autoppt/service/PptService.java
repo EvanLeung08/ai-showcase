@@ -66,13 +66,13 @@ public class PptService {
         List<SlideContent> slides = AutoPptGenerator.parseMarkdown(markdownContent);
 
         PptTemplate template = new PptTemplate(
-                new Color(0, 255, 255),    // Title color
-                new Color(255, 255, 255),  // Body color
-                36.0,                      // Title font size
+                null,    // Title color
+                null,  // Body color
+                40,                      // Title font size
                 20.0,                      // Body font size
                 "Microsoft Sans Serif",    // Title font
                 "Microsoft Sans Serif",    // Body font
-                "pic/1.png"                // Background image path
+                "pic/02.png"                // Background image path
         );
 
         pptContent = new ByteArrayOutputStream();

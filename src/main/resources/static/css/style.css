@@ -1,171 +1,169 @@
+/* ===== 动态背景 ===== */
 body {
-    font-family: 'Roboto', sans-serif;
+    font-family: 'Orbitron', sans-serif;
     height: 100vh;
     margin: 0;
+    background: linear-gradient(-45deg, #0a0a2e, #1a1a3a, #2d2d4a, #3d3d5a);
+    background-size: 400% 400%;
+    animation: gradientFlow 15s ease infinite;
+    color: rgba(180, 200, 255, 0.9);
+    position: relative;
+    overflow-x: hidden;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
 }
 
-body.default {
-    background-color: #2c3e50;
-    color: #ecf0f1;
+@keyframes gradientFlow {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
 }
 
-body.dark {
-    background-color: #1a1a1a;
-    color: #f5f5f5;
+/* ===== 全息导航栏 ===== */
+.navbar {
+    background: rgba(18, 18, 34, 0.95);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(100, 217, 255, 0.2);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
 }
 
-body.light {
-    background-color: #f5f5f5;
-    color: #2c3e50;
+.navbar-brand {
+    font-size: 1.8em;
+    background: linear-gradient(45deg, #64d9ff, #8464ff);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-weight: 700;
+    letter-spacing: 1px;
 }
 
-body.monokai {
-    background-color: #272822;
-    color: #f8f8f2;
+.nav-link {
+    color: rgba(160, 180, 255, 0.9) !important;
+    font-size: 1.1em;
+    transition: all 0.3s ease;
 }
 
+.nav-link.active {
+    border-bottom: 2px solid #64d9ff;
+    text-shadow: 0 0 10px rgba(100, 217, 255, 0.3);
+}
+
+/* ===== 科技感卡片 ===== */
 .card {
-    background-color: #34495e;
-    border: none;
-    border-radius: 15px;
-    box-shadow: 0 0 20px rgba(0, 0, 0, 0.7);
+    background: linear-gradient(145deg, rgba(18, 22, 40, 0.95), rgba(28, 32, 50, 0.95));
+    border: 1px solid rgba(100, 150, 255, 0.2);
+    border-radius: 12px;
+    box-shadow: 0 8px 32px rgba(50, 100, 255, 0.1);
     margin: 20px;
+    backdrop-filter: blur(8px);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-body.light .card {
-    background-color: #ffffff;
-    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
-}
-
-body.monokai .card {
-    background-color: #3e3d32;
-    box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 40px rgba(80, 120, 255, 0.2);
 }
 
 .card-header {
-    background-color: #2c3e50;
-    border-bottom: none;
+    background: linear-gradient(90deg,
+        rgba(60, 80, 120, 0.4) 0%,
+        rgba(80, 100, 150, 0.3) 50%,
+        rgba(60, 80, 120, 0.4) 100%);
+    border-bottom: 1px solid rgba(100, 150, 255, 0.3);
+    border-radius: 12px 12px 0 0;
 }
 
-body.light .card-header {
-    background-color: #ffffff;
+.card-header h1 {
+    font-size: 2.2em;
+    background: linear-gradient(45deg, #64d9ff, #8464ff);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: 0 0 15px rgba(100, 150, 255, 0.3);
 }
 
-body.monokai .card-header {
-    background-color: #3e3d32;
+.card-body {
+    background: rgba(25, 30, 45, 0.8);
+    color: rgba(180, 200, 255, 0.9);
 }
 
-h1 {
-    color: #1abc9c;
-    font-size: 2.5em;
-}
-
-body.light h1 {
-    color: #3498db;
-}
-
-body.monokai h1 {
-    color: #a6e22e;
-}
-
+/* ===== 高级灰表单控件 ===== */
 .form-control {
-    background-color: #34495e;
-    color: #ecf0f1;
-    border: none;
-    border-radius: 10px;
+    background: rgba(50, 55, 75, 0.9) !important;
+    border: 1px solid rgba(120, 140, 180, 0.4) !important;
+    color: rgba(210, 220, 240, 0.95) !important;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-body.light .form-control {
-    background-color: #ffffff;
-    color: #2c3e50;
+.form-control:focus {
+    background: rgba(60, 65, 85, 0.95) !important;
+    border-color: #8c9db5 !important;
+    box-shadow: 0 0 15px rgba(140, 157, 181, 0.3) !important;
 }
 
-body.monokai .form-control {
-    background-color: #49483e;
-    color: #f8f8f2;
+.form-control::placeholder {
+    color: rgba(160, 175, 190, 0.6) !important;
 }
 
-.btn-success {
-    background-color: #1abc9c;
-    border: none;
-    border-radius: 10px;
-    font-size: 1.2em;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
+.custom-select {
+    background: rgba(50, 55, 75, 0.9) url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 4 5'%3e%3cpath fill='%238c9db5' d='M2 0L0 2h4zm0 5L0 3h4z'/%3e%3c/svg%3e") no-repeat right 0.75rem center/8px 10px !important;
 }
 
-.btn-success:hover {
-    background-color: #16a085;
+textarea.form-control::-webkit-scrollbar {
+    width: 8px;
+    background: rgba(40, 45, 60, 0.5);
 }
 
-body.light .btn-success {
-    background-color: #3498db;
-}
-
-body.light .btn-success:hover {
-    background-color: #2980b9;
-}
-
-body.monokai .btn-success {
-    background-color: #a6e22e;
-}
-
-body.monokai .btn-success:hover {
-    background-color: #66d9ef;
+textarea.form-control::-webkit-scrollbar-thumb {
+    background: rgba(100, 120, 150, 0.6);
+    border-radius: 4px;
 }
 
 .invalid-feedback {
-    color: #e74c3c;
+    color: #ff7d7d !important;
 }
 
-
-
-body.light .footer {
-    background-color: #ffffff;
-    color: #2c3e50;
+.form-control.is-invalid {
+    border-color: #ff7d7d !important;
+    box-shadow: 0 0 8px rgba(255, 125, 125, 0.2) !important;
 }
 
-body.monokai .footer {
-    background-color: #3e3d32;
-    color: #f8f8f2;
+/* ===== 全息按钮 ===== */
+.btn-success, .btn-danger, .btn-primary {
+    background: linear-gradient(45deg, #64d9ff, #8464ff);
+    border: none;
+    border-radius: 8px;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.4s ease;
 }
 
-/* Responsive styles */
-@media (max-width: 768px) {
-    h1 {
-        font-size: 2em;
-    }
-
-    .form-control {
-        font-size: 1em;
-    }
-
-    .btn-success {
-        font-size: 1em;
-    }
+.btn-success:hover, .btn-danger:hover, .btn-primary:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 25px rgba(100, 217, 255, 0.4);
 }
 
-html, body {
-    height: 100%;
-    margin: 0;
-    display: flex;
-    flex-direction: column;
-}
-
-body {
-    background: linear-gradient(135deg, #1f1c2c, #928dab);
-    color: #ffffff;
-    font-family: 'Roboto', sans-serif;
-}
-
-.container {
-    flex: 1;
-}
-
+/* ===== 固定底部 ===== */
 .footer {
-    background-color: #2c3e50;
-    color: #ffffff;
-    padding: 10px 0;
-    text-align: center;
+    background: rgba(18, 18, 34, 0.9);
+    backdrop-filter: blur(5px);
+    border-top: 1px solid rgba(100, 217, 255, 0.2);
+    padding: 15px 0;
     margin-top: auto;
+    z-index: 100;
+}
+
+.footer p {
+    color: rgba(140, 140, 174, 0.9);
+    margin: 0;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+    .card {
+        margin: 10px;
+    }
+
+    .card-header h1 {
+        font-size: 1.8em;
+    }
 }

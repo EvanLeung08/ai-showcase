@@ -50,8 +50,9 @@ public class PptTemplate {
             title.setText(titleText);
             title.setAnchor(new Rectangle2D.Double(50, 30, 1180, 60));
             title.setFillColor(titleColor);
-            setFontSizeAndFont(title, titleFontSize, titleFont);
+            setTitleFontSizeAndFont(title, titleFontSize, titleFont);
         }
+
 
         // Add body
         if (bodyText != null && !bodyText.isEmpty()) {
@@ -59,11 +60,20 @@ public class PptTemplate {
             body.setText(bodyText);
             body.setAnchor(new Rectangle2D.Double(100, 120, 1080, 500));
             body.setFillColor(bodyColor);
-            setFontSizeAndFont(body, bodyFontSize, bodyFont);
+            setBodyFontSizeAndFont(body, bodyFontSize, bodyFont);
         }
     }
 
-    private void setFontSizeAndFont(XSLFTextShape shape, double fontSize, String font) {
+    private void setTitleFontSizeAndFont(XSLFTextShape shape, double fontSize, String font) {
+        for (var paragraph : shape.getTextParagraphs()) {
+            for (var run : paragraph.getTextRuns()) {
+                run.setFontSize(fontSize);
+                run.setFontFamily(font);
+                run.setBold(true); // Set the font to bold
+            }
+        }
+    }
+    private void setBodyFontSizeAndFont(XSLFTextShape shape, double fontSize, String font) {
         for (var paragraph : shape.getTextParagraphs()) {
             for (var run : paragraph.getTextRuns()) {
                 run.setFontSize(fontSize);

@@ -5,25 +5,34 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <title>Evan AI Showcase</title>
     <link rel="stylesheet" th:href="@{/css/style.css}">
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
 </head>
 <body>
-<nav class="navbar navbar-expand-lg navbar-dark">
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
     <a class="navbar-brand" href="#">Evan AI Showcase</a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
     </button>
     <div class="collapse navbar-collapse" id="navbarNav">
-        <ul class="navbar-nav mx-auto">
+        <!-- 在navbar内添加科技感图标 -->
+        <ul class="navbar-nav ml-auto">
             <li class="nav-item">
-                <a class="nav-link active" href="#home" data-toggle="tab">Home</a>
+                <a class="nav-link active" href="#home" data-toggle="tab">
+                    <i class="fas fa-home mr-2"></i>Home
+                </a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="#generate" data-toggle="tab">Generate</a>
+                <a class="nav-link" href="#generate" data-toggle="tab">
+                    <i class="fas fa-magic mr-2"></i>Generate
+                </a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="#preview" data-toggle="tab">Preview</a>
+                <a class="nav-link" href="#preview" data-toggle="tab">
+                    <i class="fas fa-eye mr-2"></i>Preview
+                </a>
             </li>
         </ul>
     </div>
@@ -31,18 +40,19 @@
 <div class="container mt-5">
     <div class="tab-content">
         <div class="tab-pane fade show active" id="home">
-            <div class="card">
+            <div class="card shadow-lg">
                 <div class="card-header text-center">
-                    <h1>Welcome to Evan AI Showcase</h1>
+                    <h1 class="gradient-text">Welcome to Evan AI Showcase</h1>
                 </div>
+
                 <div class="card-body">
                     <p class="text-center">Use the tabs above to navigate through different functionalities.</p>
                 </div>
             </div>
         </div>
         <div class="tab-pane fade" id="generate">
-            <div class="card">
-                <div class="card-header text-center">
+            <div class="card shadow-lg">
+                <div class="card-header text-center bg-primary text-white">
                     <h1>Generate PPT or PDF</h1>
                 </div>
                 <div class="card-body">
@@ -68,8 +78,8 @@
             </div>
         </div>
         <div class="tab-pane fade" id="preview">
-            <div class="card">
-                <div class="card-header text-center">
+            <div class="card shadow-lg">
+                <div class="card-header text-center bg-primary text-white">
                     <h1>Preview PPT</h1>
                 </div>
                 <div class="card-body">
@@ -106,8 +116,15 @@
         </div>
     </div>
 </div>
-<footer class="footer text-center mt-5">
-    <p>&copy; 2025 Evan Leung</p>
+<!-- 修改footer部分 -->
+<footer class="footer">
+    <div class="container">
+        <p class="text-center mb-0">
+            <span class="text-muted">&copy; 2025 Evan Leung</span>
+            <span class="mx-3">|</span>
+            <span class="text-muted">Powered by Evan AI Technology</span>
+        </p>
+    </div>
 </footer>
 <script>
     let isRequestInProgress = false;
@@ -122,17 +139,22 @@
         prompt.classList.remove("is-invalid");
         return true;
     }
-
-    function changeTheme() {
-        var theme = document.getElementById("theme").value;
-        document.body.className = theme;
+        function validatePreviewForm() {
+        return validateForm('promptPreview');
     }
 
     function previewPpt() {
+          // 新增校验逻辑
+        if (!validatePreviewForm()) {
+            showMessage("Please enter 1-5 words separated by commas");
+            return;
+        }
+
         if (isRequestInProgress) {
             showMessage("Please wait for the current request to complete.");
             return;
         }
+
 
         var prompt = document.getElementById("promptPreview").value;
         var generationType = document.getElementById("generationTypePreview").value;
@@ -183,6 +205,16 @@
         });
     }
 
+        // 在预览按钮的点击事件中绑定校验
+    document.getElementById('previewButton').addEventListener('click', function() {
+        if (!validatePreviewForm()) {
+            document.getElementById('promptPreview').classList.add("is-invalid");
+        } else {
+            document.getElementById('promptPreview').classList.remove("is-invalid");
+            previewPpt();
+        }
+    });
+
     function downloadPpt() {
         if (isRequestInProgress) {
             showMessage("Please wait for the current request to complete.");
@@ -231,7 +263,22 @@
             target.classList.add('show', 'active');
         });
     });
+        // 添加粒子动画脚本
+    document.addEventListener('DOMContentLoaded', function() {
+        const canvas = document.createElement('canvas');
+        canvas.style.position = 'fixed';
+        canvas.style.top = 0;
+        canvas.style.left = 0;
+        canvas.style.zIndex = -1;
+        document.body.appendChild(canvas);
+
+        // 粒子动画实现代码（此处省略具体实现）
+    });
 </script>
+
+
+
+
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
