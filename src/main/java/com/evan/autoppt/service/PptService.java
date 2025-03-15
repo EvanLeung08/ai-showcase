@@ -21,6 +21,7 @@ public class PptService {
 
     private ByteArrayOutputStream pptContent;
 
+    private static final Font CHINESE_FONT = new Font("WenQuanYi Micro Hei", Font.PLAIN, 12);
 
     public List<byte[]> convertPptToImages(String prompt, String generationType) throws Exception {
 
@@ -36,6 +37,7 @@ public class PptService {
                 graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
                 graphics.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
                 graphics.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
+                graphics.setFont(CHINESE_FONT);
                 slide.draw(graphics);
                 ByteArrayOutputStream baos = new ByteArrayOutputStream();
                 ImageIO.write(img, "png", baos);
@@ -66,13 +68,13 @@ public class PptService {
         List<SlideContent> slides = AutoPptGenerator.parseMarkdown(markdownContent);
 
         PptTemplate template = new PptTemplate(
-                null,    // Title color
-                null,  // Body color
-                40,                      // Title font size
-                20.0,                      // Body font size
-                "Microsoft Sans Serif",    // Title font
-                "Microsoft Sans Serif",    // Body font
-                "pic/02.png"                // Background image path
+                null,
+                null,
+                40,
+                20.0,
+                "WenQuanYi Micro Hei",    // 修改为Linux系统通用字体
+                "WenQuanYi Micro Hei",    // 修改为Linux系统通用字体
+                "pic/02.png"
         );
 
         pptContent = new ByteArrayOutputStream();
