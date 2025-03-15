@@ -8,16 +8,15 @@
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-
 </head>
 <body>
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
     <a class="navbar-brand" href="#">Evan AI Showcase</a>
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
     </button>
     <div class="collapse navbar-collapse" id="navbarNav">
-        <!-- 在navbar内添加科技感图标 -->
         <ul class="navbar-nav ml-auto">
             <li class="nav-item">
                 <a class="nav-link active" href="#home" data-toggle="tab">
@@ -44,7 +43,6 @@
                 <div class="card-header text-center">
                     <h1 class="gradient-text">Welcome to Evan AI Showcase</h1>
                 </div>
-
                 <div class="card-body">
                     <p class="text-center">Use the tabs above to navigate through different functionalities.</p>
                 </div>
@@ -56,7 +54,7 @@
                     <h1>Generate PPT or PDF</h1>
                 </div>
                 <div class="card-body">
-                    <form id="pptForm" th:action="@{/generate}" method="post" onsubmit="return validateForm('prompt')">
+                    <form id="pptForm" onsubmit="return validateGenerateForm()">
                         <div class="form-group">
                             <label for="prompt">Enter up to 5 words, separated by commas:</label>
                             <textarea id="prompt" name="prompt" class="form-control" rows="5" required></textarea>
@@ -71,9 +69,23 @@
                                 <option value="mnemonics" selected>Word Mnemonics</option>
                             </select>
                         </div>
-                        <button type="submit" id="generateButton" class="btn btn-success btn-block" onclick="setFormAction('/generate')">Generate PPT</button>
-                        <button type="submit" id="generatePdfButton" class="btn btn-danger btn-block" onclick="setFormAction('/generatePdf')">Generate PDF</button>
+                        <button type="submit" id="generateButton" class="btn btn-success btn-block"
+                                onclick="setFormAction('/generate')">Generate PPT
+                        </button>
+                        <button type="submit" id="generatePdfButton" class="btn btn-danger btn-block"
+                                onclick="setFormAction('/generatePdf')">Generate PDF
+                        </button>
                     </form>
+                    <div id="progressContainerGenerate" class="mt-3" style="display: none;">
+                        <div class="progress">
+                            <div id="progressBarGenerate" class="progress-bar" role="progressbar" style="width: 0%;"
+                                 aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+                        </div>
+                        <div id="progressStatusGenerate" class="text-center mt-2"></div>
+                    </div>
+                    <div id="messageContainerGenerate" class="alert alert-danger mt-3" style="display: none;">
+                        <p id="messageTextGenerate"></p>
+                    </div>
                 </div>
             </div>
         </div>
@@ -83,10 +95,11 @@
                     <h1>Preview PPT</h1>
                 </div>
                 <div class="card-body">
-                    <form id="previewForm" onsubmit="return validateForm('promptPreview')">
+                    <form id="previewForm" onsubmit="return validatePreviewForm()">
                         <div class="form-group">
                             <label for="promptPreview">Enter up to 5 words, separated by commas:</label>
-                            <textarea id="promptPreview" name="prompt" class="form-control" rows="5" required></textarea>
+                            <textarea id="promptPreview" name="prompt" class="form-control" rows="5"
+                                      required></textarea>
                             <div class="invalid-feedback">
                                 Please enter up to 5 words, separated by commas.
                             </div>
@@ -98,11 +111,14 @@
                                 <option value="mnemonics" selected>Word Mnemonics</option>
                             </select>
                         </div>
-                        <button type="button" id="previewButton" class="btn btn-primary btn-block" onclick="previewPpt()">Preview</button>
+                        <button type="button" id="previewButton" class="btn btn-primary btn-block"
+                                onclick="previewPpt()">Preview
+                        </button>
                     </form>
                     <div id="progressContainer" class="mt-3" style="display: none;">
                         <div class="progress">
-                            <div id="progressBar" class="progress-bar" role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+                            <div id="progressBar" class="progress-bar" role="progressbar" style="width: 0%;"
+                                 aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
                         </div>
                         <div id="progressStatus" class="text-center mt-2"></div>
                     </div>
@@ -115,7 +131,6 @@
         </div>
     </div>
 </div>
-<!-- 修改footer部分 -->
 <footer class="footer">
     <div class="container">
         <p class="text-center mb-0">
@@ -138,86 +153,18 @@
         prompt.classList.remove("is-invalid");
         return true;
     }
-        function validatePreviewForm() {
+
+    function validateGenerateForm() {
+        return validateForm('prompt');
+    }
+
+    function validatePreviewForm() {
         return validateForm('promptPreview');
     }
 
-    function previewPpt() {
-          // 新增校验逻辑
-        if (!validatePreviewForm()) {
-            showMessage("Please enter 1-5 words separated by commas");
-            return;
-        }
-
-        if (isRequestInProgress) {
-            showMessage("Please wait for the current request to complete.");
-            return;
-        }
-
-
-        var prompt = document.getElementById("promptPreview").value;
-        var generationType = document.getElementById("generationTypePreview").value;
-        var progressBar = document.getElementById("progressBar");
-        var progressStatus = document.getElementById("progressStatus");
-        var progressContainer = document.getElementById("progressContainer");
-        var previewButton = document.getElementById("previewButton");
-
-        isRequestInProgress = true;
-        progressContainer.style.display = "block";
-        progressBar.style.width = "0%";
-        progressBar.setAttribute("aria-valuenow", 0);
-        progressStatus.innerText = "Preparing preview... This may take 1-2 minutes.";
-        previewButton.disabled = true;
-
-        fetch('/preview', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded'
-            },
-            body: new URLSearchParams({prompt: prompt, generationType: generationType})
-        })
-        .then(response => response.json())
-        .then(images => {
-            var pptPreview = document.getElementById("pptPreview");
-            pptPreview.innerHTML = "";
-            images.forEach((image, index) => {
-                var img = document.createElement("img");
-                img.src = "data:image/png;base64," + image;
-                img.className = "img-fluid";
-                pptPreview.appendChild(img);
-
-                var progress = ((index + 1) / images.length) * 100;
-                progressBar.style.width = progress + "%";
-                progressBar.setAttribute("aria-valuenow", progress);
-                progressStatus.innerText = `Progress: ${Math.round(progress)}%`;
-            });
-            progressStatus.innerText = "Preview completed!";
-            document.getElementById("downloadButton").style.display = "block";
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            progressStatus.innerText = "Error occurred!";
-        })
-        .finally(() => {
-            isRequestInProgress = false;
-            previewButton.disabled = false;
-        });
-    }
-
-        // 在预览按钮的点击事件中绑定校验
-    document.getElementById('previewButton').addEventListener('click', function() {
-        if (!validatePreviewForm()) {
-            document.getElementById('promptPreview').classList.add("is-invalid");
-        } else {
-            document.getElementById('promptPreview').classList.remove("is-invalid");
-            previewPpt();
-        }
-    });
-
-
-    function showMessage(message) {
-        var messageContainer = document.getElementById("messageContainer");
-        var messageText = document.getElementById("messageText");
+    function showMessage(message, containerId, textId) {
+        var messageContainer = document.getElementById(containerId);
+        var messageText = document.getElementById(textId);
         messageText.innerText = message;
         messageContainer.style.display = "block";
         setTimeout(() => {
@@ -229,6 +176,141 @@
         document.getElementById('pptForm').action = action;
     }
 
+    function handleGenerate(event, action) {
+        event.preventDefault();
+        if (!validateGenerateForm()) {
+            showMessage("Please enter 1-5 words separated by commas", "messageContainerGenerate", "messageTextGenerate");
+            return;
+        }
+
+        if (isRequestInProgress) {
+            showMessage("Please wait for the current request to complete.", "messageContainerGenerate", "messageTextGenerate");
+            return;
+        }
+
+        var prompt = document.getElementById("prompt").value;
+        var generationType = document.getElementById("generationType").value;
+        var progressBar = document.getElementById("progressBarGenerate");
+        var progressStatus = document.getElementById("progressStatusGenerate");
+        var progressContainer = document.getElementById("progressContainerGenerate");
+        var generateButton = document.getElementById("generateButton");
+        var generatePdfButton = document.getElementById("generatePdfButton");
+
+        isRequestInProgress = true;
+        progressContainer.style.display = "block";
+        progressBar.style.width = "0%";
+        progressBar.setAttribute("aria-valuenow", 0);
+        progressBar.classList.remove("bg-success", "bg-danger");
+        progressStatus.innerText = "Generating... This may take 1-2 minutes.";
+        generateButton.disabled = true;
+        generatePdfButton.disabled = true;
+
+        fetch(action, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: new URLSearchParams({prompt: prompt, generationType: generationType})
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.blob();
+        })
+        .then(blob => {
+            var url = window.URL.createObjectURL(blob);
+            var a = document.createElement('a');
+            a.style.display = 'none';
+            a.href = url;
+            a.download = action === '/generate' ? 'handbook.pptx' : 'handbook.pdf';
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);
+            progressStatus.innerText = "Generation completed!";
+            progressBar.style.width = "100%";
+            progressBar.setAttribute("aria-valuenow", 100);
+            progressBar.classList.add("bg-success");
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            progressStatus.innerText = "Error occurred!";
+            showMessage("An error occurred while generating the file. Please try again.", "messageContainerGenerate", "messageTextGenerate");
+            progressBar.style.width = "100%";
+            progressBar.classList.add("bg-danger");
+        })
+        .finally(() => {
+            isRequestInProgress = false;
+            generateButton.disabled = false;
+            generatePdfButton.disabled = false;
+        });
+    }
+
+    function previewPpt() {
+        if (!validatePreviewForm()) {
+            showMessage("Please enter 1-5 words separated by commas", "messageContainer", "messageText");
+            return;
+        }
+
+        var prompt = document.getElementById("promptPreview").value;
+        var generationType = document.getElementById("generationTypePreview").value;
+        var progressBar = document.getElementById("progressBar");
+        var progressStatus = document.getElementById("progressStatus");
+        var progressContainer = document.getElementById("progressContainer");
+        var pptPreview = document.getElementById("pptPreview");
+
+        isRequestInProgress = true;
+        progressContainer.style.display = "block";
+        progressBar.style.width = "0%";
+        progressBar.setAttribute("aria-valuenow", 0);
+        progressStatus.innerText = "Generating preview... This may take 1-2 minutes.";
+
+        fetch('/preview', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: new URLSearchParams({prompt: prompt, generationType: generationType})
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(images => {
+            pptPreview.innerHTML = '';
+            images.forEach(base64Image => {
+                var img = document.createElement('img');
+                img.src = 'data:image/png;base64,' + base64Image;
+                img.classList.add('img-fluid', 'mb-3');
+                pptPreview.appendChild(img);
+            });
+            progressStatus.innerText = "Preview completed!";
+            progressBar.style.width = "100%";
+            progressBar.setAttribute("aria-valuenow", 100);
+            progressBar.classList.add("bg-success");
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            progressStatus.innerText = "Error occurred!";
+            showMessage("An error occurred while generating the preview. Please try again.", "messageContainer", "messageText");
+            progressBar.style.width = "100%";
+            progressBar.classList.add("bg-danger");
+        })
+        .finally(() => {
+            isRequestInProgress = false;
+        });
+    }
+
+    document.getElementById('generateButton').addEventListener('click', function(event) {
+        handleGenerate(event, '/generate');
+    });
+
+    document.getElementById('generatePdfButton').addEventListener('click', function(event) {
+        handleGenerate(event, '/generatePdf');
+    });
+
     document.querySelectorAll('.nav-link').forEach(link => {
         link.addEventListener('click', function() {
             document.querySelectorAll('.nav-link').forEach(nav => nav.classList.remove('active'));
@@ -238,7 +320,7 @@
             target.classList.add('show', 'active');
         });
     });
-        // 添加粒子动画脚本
+
     document.addEventListener('DOMContentLoaded', function() {
         const canvas = document.createElement('canvas');
         canvas.style.position = 'fixed';
@@ -246,14 +328,8 @@
         canvas.style.left = 0;
         canvas.style.zIndex = -1;
         document.body.appendChild(canvas);
-
-        // 粒子动画实现代码（此处省略具体实现）
     });
 </script>
-
-
-
-
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>

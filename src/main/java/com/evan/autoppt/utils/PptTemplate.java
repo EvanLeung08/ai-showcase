@@ -1,3 +1,4 @@
+// PptTemplate.java
 package com.evan.autoppt.utils;
 
 import org.apache.poi.sl.usermodel.PictureData;
@@ -50,9 +51,8 @@ public class PptTemplate {
             title.setText(titleText);
             title.setAnchor(new Rectangle2D.Double(50, 30, 1180, 60));
             title.setFillColor(titleColor);
-            setTitleFontSizeAndFont(title, titleFontSize, titleFont);
+            setTitleFontSizeAndFont(title, titleFontSize, "SimSun"); // Use a font that supports Chinese characters
         }
-
 
         // Add body
         if (bodyText != null && !bodyText.isEmpty()) {
@@ -60,7 +60,7 @@ public class PptTemplate {
             body.setText(bodyText);
             body.setAnchor(new Rectangle2D.Double(100, 120, 1080, 500));
             body.setFillColor(bodyColor);
-            setBodyFontSizeAndFont(body, bodyFontSize, bodyFont);
+            setBodyFontSizeAndFont(body, bodyFontSize, "SimSun"); // Use a font that supports Chinese characters
         }
     }
 
@@ -73,6 +73,7 @@ public class PptTemplate {
             }
         }
     }
+
     private void setBodyFontSizeAndFont(XSLFTextShape shape, double fontSize, String font) {
         for (var paragraph : shape.getTextParagraphs()) {
             for (var run : paragraph.getTextRuns()) {

@@ -2,6 +2,7 @@ package com.evan.autoppt.controller;
 
 import com.evan.autoppt.service.PptService;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -15,6 +16,7 @@ import java.util.Base64;
 import java.util.Collections;
 import java.util.List;
 
+@Slf4j
 @Controller
 public class PptController {
 
@@ -22,6 +24,7 @@ public class PptController {
     private PptService pptService;
 
 
+    // PptController.java
     @PostMapping("/preview")
     @ResponseBody
     public List<String> previewPpt(@RequestParam("prompt") String prompt, @RequestParam("generationType") String generationType) {
@@ -35,6 +38,9 @@ public class PptController {
             return base64Images;
         } catch (Exception e) {
             e.printStackTrace();
+            // Log the error for debugging purposes
+            log.error("Error occurred while generating PPT preview: ", e);
+            // Return an empty list to avoid breaking the frontend
             return Collections.emptyList();
         }
     }
