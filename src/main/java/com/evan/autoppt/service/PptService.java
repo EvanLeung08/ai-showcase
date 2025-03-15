@@ -23,9 +23,9 @@ public class PptService {
 
 
     public List<byte[]> convertPptToImages(String prompt, String generationType) throws Exception {
-        if (pptContent == null) {
+
             generatePptContent(prompt, generationType, null);
-        }
+
 
         try (ByteArrayInputStream bais = new ByteArrayInputStream(pptContent.toByteArray());
              XMLSlideShow ppt = new XMLSlideShow(bais)) {
