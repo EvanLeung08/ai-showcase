@@ -33,6 +33,12 @@
                     <i class="fas fa-eye mr-2"></i>Preview
                 </a>
             </li>
+            <!-- 新增图像生成导航项 -->
+            <li class="nav-item">
+                <a class="nav-link" href="#imageGeneration" data-toggle="tab">
+                    <i class="fas fa-image mr-2"></i>Image Generation
+                </a>
+            </li>
         </ul>
     </div>
 </nav>
@@ -130,7 +136,36 @@
             </div>
         </div>
     </div>
+
+    <!-- 在现有标签页结构中找到合适的位置添加 -->
+    <div class="tab-pane fade" id="imageGeneration">
+        <div class="card shadow-lg">
+            <div class="card-header text-center bg-info text-white">
+                <h1>Awesome Image Generation</h1>
+            </div>
+            <div class="card-body">
+                <form id="imageForm" onsubmit="return generateImage()">
+                    <div class="form-group">
+                        <label for="imagePrompt">Please input the description of image：</label>
+                        <textarea id="imagePrompt" class="form-control" rows="3" required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-success btn-block">Generate Image</button>
+                </form>
+                <div id="imageResult" class="mt-3 text-center" style="display: none;">
+                    <img id="generatedImage" class="img-fluid rounded shadow" style="max-height: 600px;">
+                    <div class="mt-3">
+                        <button onclick="downloadImage()" class="btn btn-primary">
+                            <i class="fas fa-download mr-2"></i>Download
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
 </div>
+
+
 <footer class="footer">
     <div class="container">
         <p class="text-center mb-0">
@@ -330,6 +365,40 @@
         document.body.appendChild(canvas);
     });
 </script>
+<!-- 在页面底部的script部分添加 -->
+<script>
+    function generateImage() {
+        const prompt = document.getElementById('imagePrompt').value;
+        const resultDiv = document.getElementById('imageResult');
+
+        fetch('/generateImage', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: new URLSearchParams({prompt: prompt})
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                document.getElementById('generatedImage').src = `data:image/png;base64,${data.image}`;
+                resultDiv.style.display = 'block';
+            } else {
+                alert(data.message);
+            }
+        });
+        return false;
+    }
+
+    function downloadImage() {
+        const image = document.getElementById('generatedImage');
+        const link = document.createElement('a');
+        link.download = 'generated-image.png';
+        link.href = image.src;
+        link.click();
+    }
+</script>
+
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>

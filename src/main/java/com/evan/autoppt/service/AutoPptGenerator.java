@@ -174,7 +174,7 @@ public class AutoPptGenerator {
         StringBuilder textContent = new StringBuilder();
         node.accept(new AbstractVisitor() {
             @Override
-            public void visit(Text text) {
+            public void visit(org.commonmark.node.Text text) {
                 textContent.append(text.getLiteral());
             }
 
@@ -190,7 +190,6 @@ public class AutoPptGenerator {
         });
         return textContent.toString();
     }
-
     public static void generatePptFile(List<SlideContent> slides, OutputStream outputStream, PptTemplate template) throws Exception {
         try (XMLSlideShow ppt = new XMLSlideShow()) {
             ppt.setPageSize(new java.awt.Dimension(1280, 720));

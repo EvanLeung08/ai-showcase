@@ -1,5 +1,6 @@
 package com.evan.autoppt.controller;
 
+import com.evan.autoppt.service.ImageGenerationService;
 import com.evan.autoppt.service.PptService;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
@@ -11,10 +12,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Base64;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 @Slf4j
 @Controller
@@ -23,7 +21,26 @@ public class PptController {
     @Autowired
     private PptService pptService;
 
+    @Autowired
+    private ImageGenerationService imageGenerationService;
 
+    // 在现有代码后面新增以下方法
+    @PostMapping("/generateImage")
+    @ResponseBody
+    public Map<String, Object> generateImage(@RequestParam("prompt") String prompt) {
+        Map<String, Object> response = new HashMap<>();
+        try {
+            String decodedPrompt = URLDecoder.decode(prompt, StandardCharsets.UTF_8.name());
+            String base64Image = imageGenerationService.generateImage(decodedPrompt);
+            response.put("success", true);
+            response.put("image", base64Image);
+        } catch (Exception e) {
+            log.error("图像生成失败", e);
+            response.put("success", false);
+            response.put("message", "图像生成失败: " + e.getMessage());
+        }
+        return response;
+    }
     // PptController.java
     @PostMapping("/preview")
     @ResponseBody
