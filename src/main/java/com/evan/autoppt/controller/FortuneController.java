@@ -18,7 +18,7 @@ public class FortuneController {
         String report = fortuneService.generateFortuneReport(
             request.get("name"),
             request.get("age"),
-            request.get("birthdate")
+            request.get("birthdate"),request.get("time"),request.get("gender") // Add gender parameter
         );
         return Map.of("report", report);
     }

@@ -1,7 +1,9 @@
 请根据以下用户信息生成专业的命理分析报告：
 姓名：{name}
 年龄：{age}
+性别：{gender}
 生日：{birthdate}
+时辰：{time}
 
 要求：
 1. 使用markdown格式

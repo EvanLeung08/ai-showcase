@@ -200,6 +200,21 @@
                                 <input type="date" id="birthdate" class="form-control" required>
                             </div>
                         </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="time">时辰：</label>
+                                <input type="time" id="time" class="form-control" required>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="gender">性别：</label>
+                                <select id="gender" class="form-control" required>
+                                    <option value="male">男</option>
+                                    <option value="female">女</option>
+                                </select>
+                            </div>
+                        </div>
                     </div>
                     <button type="submit" class="btn btn-dark btn-block">
                         <i class="fas fa-calculator mr-2"></i>生成命理报告
@@ -461,7 +476,9 @@
              body: JSON.stringify({
                  name: document.getElementById('name').value,
                  age: document.getElementById('age').value,
-                 birthdate: document.getElementById('birthdate').value
+                 birthdate: document.getElementById('birthdate').value,
+                 time: document.getElementById('time').value,
+                 gender: document.getElementById('gender').value
              })
          });
 

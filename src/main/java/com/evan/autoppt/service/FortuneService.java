@@ -14,12 +14,12 @@ public class FortuneService {
     // 在类声明后添加渲染器实例
     private static final HtmlRenderer htmlRenderer = HtmlRenderer.builder().build();
 
-    public String generateFortuneReport(String name, String age, String birthdate) {
+    public String generateFortuneReport(String name, String age, String birthdate,String time, String gender) {
         try {
             String template = readExampleTemplate();
             String formattedPrompt = template.replace("{name}", name)
                     .replace("{age}", age)
-                    .replace("{birthdate}", birthdate);
+                    .replace("{birthdate}", birthdate).replace("{time}", time) .replace("{gender}", gender); // Add gender parameter; // 新增时辰字段
             // 修改API调用参数
             String response = AutoPptGenerator.callFortuneApi(
                     formattedPrompt.replace("\"", "\\\""),
