@@ -1,14 +1,19 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <title>Evan AI Showcase</title>
-    <link rel="stylesheet" th:href="@{/css/style.css}">
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
-    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link th:rel="stylesheet" th:href="@{/css/style.css}">
+    <link ref="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link th:href="@{/css/bootstrap.min.css}" th:rel="stylesheet">
+    <script th:src="@{/js/jquery-3.5.1.slim.min.js}"></script>
+    <script th:src="@{/js/popper.min.js}"></script>
+    <script th:src="@{/js/bootstrap.min.js}"></script>
+
 </head>
+
 <body>
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
     <a class="navbar-brand" href="#">Evan AI Showcase</a>
@@ -140,7 +145,7 @@
     <!-- 在现有标签页结构中找到合适的位置添加 -->
     <div class="tab-pane fade" id="imageGeneration">
         <div class="card shadow-lg">
-            <div class="card-header text-center bg-info text-white">
+            <div class="card-header text-center bg-primary  text-white">
                 <h1>Awesome Image Generation</h1>
             </div>
             <div class="card-body">
@@ -366,7 +371,7 @@
     });
 </script>
 <!-- 在页面底部的script部分添加 -->
-<script>
+<script th:inline="javascript">
     function generateImage() {
         const prompt = document.getElementById('imagePrompt').value;
         const resultDiv = document.getElementById('imageResult');
@@ -399,8 +404,5 @@
     }
 </script>
 
-<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 </html>
