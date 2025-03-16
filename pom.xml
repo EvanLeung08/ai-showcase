@@ -44,6 +44,10 @@
                 <enabled>false</enabled>
             </snapshots>
         </repository>
+        <repository>
+            <id>webjars</id>
+            <url>https://dl.bintray.com/webjars/maven</url>
+        </repository>
     </repositories>
 
     <pluginRepositories>
@@ -200,6 +204,11 @@
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
             <version>2.11.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.webjars</groupId>
+            <artifactId>marked</artifactId>
+            <version>0.3.2-1</version>
         </dependency>
 
     </dependencies>

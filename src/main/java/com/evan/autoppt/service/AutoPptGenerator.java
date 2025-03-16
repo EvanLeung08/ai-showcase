@@ -48,19 +48,19 @@ public class AutoPptGenerator {
 
         while (hasMoreContent) {
             String requestBody = String.format("""
-                        {
-                            "model": "4.0Ultra",
-                            "messages": [
-                                {"role": "system", "content": "你是一个单词记忆专家和世界记忆大师，你的任务是帮助用户记忆英语单词。"},
-                                {"role": "user", "content": "%s\\n\\n 请提供第%d部分输出。"}
-                            ],
-                            "stream": false,
-                            "temperature": 0.7
-                        }
-                        """,
+                            {
+                                "model": "4.0Ultra",
+                                "messages": [
+                                    {"role": "system", "content": "你是一个单词记忆专家和世界记忆大师，你的任务是帮助用户记忆英语单词。"},
+                                    {"role": "user", "content": "%s\\n\\n 请提供第%d部分输出。"}
+                                ],
+                                "stream": false,
+                                "temperature": 0.7
+                            }
+                            """,
                     exampleTemplate.replace("\"", "\\\"") // Escape double quotes
                             .replace("\n", "\\n") // Escape newlines
-                            .replace("\\n-", "\\n-").replace("{{wordlist}}",words), // Preserve list structure
+                            .replace("\\n-", "\\n-").replace("{{wordlist}}", words), // Preserve list structure
 
                     part);
 
@@ -108,6 +108,52 @@ public class AutoPptGenerator {
         return aggregatedContent.toString();
     }
 
+    public static String callFortuneApi(String prompt, String systemRole) throws Exception {
+
+
+        String requestBody = String.format("""
+                            {
+                                "model": "4.0Ultra",
+                                "messages": [
+                                    {"role": "system", "content": "%s"},
+                                    {"role": "user", "content": "%s\\n\\n 请提供第%d部分输出。"}
+                                ],
+                                "stream": false,
+                                "temperature": 0.7
+                            }
+                            """,
+                systemRole.replace("\"", "\\\""),
+                prompt.replace("\"", "\\\"") // Escape double quotes
+                        .replace("\n", "\\n") // Escape newlines
+                        .replace("\\n-", "\\n-"),1);
+
+        // 复用现有的HTTP客户端配置
+        HttpClient client = HttpClient.newBuilder()
+                .connectTimeout(Duration.ofSeconds(120))
+                .build();
+
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(API_ENDPOINT))
+                .header("Content-Type", "application/json")
+                .header("Authorization", "Bearer " + System.getProperty("API_KEY"))
+                .timeout(Duration.ofSeconds(120))
+                .POST(HttpRequest.BodyPublishers.ofString(requestBody))
+                .build();
+
+        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+        String responseBody = response.body();
+
+        // 直接返回完整内容（去掉分页逻辑）
+        JSONObject jsonResponse = new JSONObject(responseBody);
+        String content = jsonResponse.getJSONArray("choices")
+                .getJSONObject(0)
+                .getJSONObject("message")
+                .getString("content");
+
+        return content;
+    }
+
+
     private static String readExampleTemplate(String generationType) throws IOException {
         String templatePath = "static/prompts/story_template.txt";
         if ("mnemonics".equals(generationType)) {
@@ -121,7 +167,6 @@ public class AutoPptGenerator {
             return new String(encoded, StandardCharsets.UTF_8);
         }
     }
-
 
 
     public static List<SlideContent> parseMarkdown(String markdown) {
@@ -190,6 +235,7 @@ public class AutoPptGenerator {
         });
         return textContent.toString();
     }
+
     public static void generatePptFile(List<SlideContent> slides, OutputStream outputStream, PptTemplate template) throws Exception {
         try (XMLSlideShow ppt = new XMLSlideShow()) {
             ppt.setPageSize(new java.awt.Dimension(1280, 720));

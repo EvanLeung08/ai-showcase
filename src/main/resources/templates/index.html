@@ -11,7 +11,7 @@
     <script th:src="@{/js/jquery-3.5.1.slim.min.js}"></script>
     <script th:src="@{/js/popper.min.js}"></script>
     <script th:src="@{/js/bootstrap.min.js}"></script>
-
+    <script th:src="@{/js/marked.js}"></script>
 </head>
 
 <body>
@@ -42,6 +42,12 @@
             <li class="nav-item">
                 <a class="nav-link" href="#imageGeneration" data-toggle="tab">
                     <i class="fas fa-image mr-2"></i>Image Generation
+                </a>
+            </li>
+            <!-- 在导航栏添加 -->
+            <li class="nav-item">
+                <a class="nav-link" href="#fortune" data-toggle="tab">
+                    <i class="fas fa-star mr-2"></i>AI算命
                 </a>
             </li>
         </ul>
@@ -167,7 +173,42 @@
             </div>
         </div>
     </div>
-
+    <!-- 在标签页区域添加 -->
+    <div class="tab-pane fade" id="fortune">
+        <div class="card shadow-lg">
+            <div class="card-header text-center bg-primary  text-dark">
+                <h1>AI智能命理分析</h1>
+            </div>
+            <div class="card-body">
+                <form id="fortuneForm" onsubmit="return handleFortuneSubmit(event)">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="name">姓名：</label>
+                                <input type="text" id="name" class="form-control" required>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="age">年龄：</label>
+                                <input type="number" id="age" class="form-control" min="1" required>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="birthdate">出生日期：</label>
+                                <input type="date" id="birthdate" class="form-control" required>
+                            </div>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-dark btn-block">
+                        <i class="fas fa-calculator mr-2"></i>生成命理报告
+                    </button>
+                </form>
+                <div id="fortuneReport" class="mt-4 p-3 bg-light rounded"></div>
+            </div>
+        </div>
+    </div>
 </div>
 
 
@@ -403,6 +444,70 @@
         link.click();
     }
 </script>
+<!--AI算命-->
+<script th:inline="javascript">
+    async function handleFortuneSubmit(event) {
+       event.preventDefault();
 
+       const reportDiv = document.getElementById('fortuneReport');
+       reportDiv.innerHTML = '<div class="text-center"><i class="fas fa-spinner fa-spin fa-2x"></i></div>';
+
+       try {
+           const response = await fetch('/generateFortune', {
+               method: 'POST',
+               headers: {
+                   'Content-Type': 'application/json'
+               },
+               body: JSON.stringify({
+                   name: document.getElementById('name').value,
+                   age: document.getElementById('age').value,
+                   birthdate: document.getElementById('birthdate').value
+               })
+           });
+
+           const data = await response.json();
+           if (data.report) {
+               // 使用marked库转换markdown
+               reportDiv.innerHTML = marked.parse(data.report);
+           } else {
+               reportDiv.innerHTML = '<div class="alert alert-danger">生成失败，请稍后再试</div>';
+           }
+       } catch (error) {
+           reportDiv.innerHTML = `<div class="alert alert-danger">请求失败：${error.message}</div>`;
+       }
+           // 直接显示美化后的HTML
+    reportDiv.innerHTML = `
+        <div class="report-container">
+            ${data.report}
+        </div>
+    `;
+
+    // 添加CSS样式
+    addReportStyles();
+   }
+
+    function addReportStyles() {
+    const style = document.createElement('style');
+    style.textContent = `
+        .report-container {
+            background: linear-gradient(to right, #f8f9fa, #ffffff);
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.15);
+        }
+        .report-container h1 {
+            color: #2c3e50;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 0.5rem;
+        }
+        .report-container table {
+            width: 100%;
+            background: #fff;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+    `;
+    document.head.appendChild(style);
+}
+</script>
 </body>
 </html>
