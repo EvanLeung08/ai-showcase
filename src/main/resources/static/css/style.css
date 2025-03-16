@@ -178,12 +178,47 @@ fortune report css */
     border-radius: 15px;
     box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
     color: #2c3e50;
+    font-family: 'Arial', sans-serif;
+    line-height: 1.6;
 }
 
 .fortune-report-container h1 {
     color: #2c3e50;
     border-bottom: 3px solid #3498db;
     padding-bottom: 0.5rem;
+    margin-bottom: 1rem;
+    font-size: 2rem;
+    text-align: center;
+}
+
+.fortune-report-container h2 {
+    color: #2c3e50;
+    border-bottom: 2px solid #3498db;
+    padding-bottom: 0.3rem;
+    margin-bottom: 0.8rem;
+    font-size: 1.5rem;
+}
+
+.fortune-report-container h3 {
+    color: #2c3e50;
+    margin-bottom: 0.5rem;
+    font-size: 1.2rem;
+}
+
+.fortune-report-container p {
+    margin-bottom: 1rem;
+    text-indent: 2em;
+}
+
+.fortune-report-container ul {
+    list-style-type: none;
+    padding-left: 0;
+}
+
+.fortune-report-container ul li::before {
+    content: "⭐";
+    margin-right: 0.5rem;
+    color: #3498db;
 }
 
 .fortune-report-container table {
@@ -191,11 +226,13 @@ fortune report css */
     background: #fff;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
     margin-bottom: 1rem;
+    border-collapse: collapse;
 }
 
 .fortune-report-container th, .fortune-report-container td {
     padding: 0.5rem;
     border: 1px solid #ddd;
+    text-align: left;
 }
 
 .fortune-report-container th {
@@ -205,4 +242,9 @@ fortune report css */
 
 .fortune-report-container td {
     background: #ffffff;
+}
+
+.fortune-report-container .emoji {
+    font-size: 1.5rem;
+    margin-right: 0.5rem;
 }
