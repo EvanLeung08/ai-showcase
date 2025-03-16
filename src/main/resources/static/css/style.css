@@ -167,3 +167,42 @@ textarea.form-control::-webkit-scrollbar-thumb {
         font-size: 1.8em;
     }
 }
+
+/*
+fortune report css */
+
+.fortune-report-container {
+    background: url('/pic/cnstyle_12.png') no-repeat center center;
+    background-size: cover;
+    padding: 2rem;
+    border-radius: 15px;
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+    color: #2c3e50;
+}
+
+.fortune-report-container h1 {
+    color: #2c3e50;
+    border-bottom: 3px solid #3498db;
+    padding-bottom: 0.5rem;
+}
+
+.fortune-report-container table {
+    width: 100%;
+    background: #fff;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    margin-bottom: 1rem;
+}
+
+.fortune-report-container th, .fortune-report-container td {
+    padding: 0.5rem;
+    border: 1px solid #ddd;
+}
+
+.fortune-report-container th {
+    background: #f8f9fa;
+    font-weight: bold;
+}
+
+.fortune-report-container td {
+    background: #ffffff;
+}

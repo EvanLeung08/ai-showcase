@@ -116,7 +116,7 @@ public class AutoPptGenerator {
                                 "model": "4.0Ultra",
                                 "messages": [
                                     {"role": "system", "content": "%s"},
-                                    {"role": "user", "content": "%s\\n\\n 请提供第%d部分输出。"}
+                                    {"role": "user", "content": "%s\\n\\n 请提供详细markdown报告输出。"}
                                 ],
                                 "stream": false,
                                 "temperature": 0.7
