@@ -210,6 +210,10 @@
             <artifactId>marked</artifactId>
             <version>0.3.2-1</version>
         </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-configuration-processor</artifactId>
+        </dependency>
 
     </dependencies>
 

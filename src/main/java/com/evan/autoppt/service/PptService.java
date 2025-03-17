@@ -4,6 +4,7 @@ import com.evan.autoppt.utils.PptTemplate;
 import com.evan.autoppt.utils.SlideContent;
 import org.apache.poi.xslf.usermodel.XMLSlideShow;
 import org.apache.poi.xslf.usermodel.XSLFSlide;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.imageio.ImageIO;
@@ -22,6 +23,9 @@ public class PptService {
     private ByteArrayOutputStream pptContent;
 
     private static final Font CHINESE_FONT = new Font("WenQuanYi Micro Hei", Font.PLAIN, 12);
+
+    @Autowired
+    private AutoPptGenerator autoPptGenerator;
 
     public List<byte[]> convertPptToImages(String prompt, String generationType) throws Exception {
 
@@ -64,8 +68,8 @@ public class PptService {
     }
 
     private void generatePptContent(String prompt, String generationType, AtomicInteger progress) throws Exception {
-        String markdownContent = AutoPptGenerator.callDeepSeekApi(prompt, generationType);
-        List<SlideContent> slides = AutoPptGenerator.parseMarkdown(markdownContent);
+        String markdownContent = autoPptGenerator.callDeepSeekApi(prompt, generationType);
+        List<SlideContent> slides = autoPptGenerator.parseMarkdown(markdownContent);
 
         PptTemplate template = new PptTemplate(
                 null,

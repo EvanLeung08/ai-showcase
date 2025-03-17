@@ -1,8 +1,11 @@
 package com.evan.autoppt.service;
 
+import com.evan.autoppt.provider.AiApiProvider;
 import org.commonmark.node.Node;
 import org.commonmark.parser.Parser;
 import org.commonmark.renderer.html.HtmlRenderer;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -13,15 +16,20 @@ import java.nio.charset.StandardCharsets;
 public class FortuneService {
     // 在类声明后添加渲染器实例
     private static final HtmlRenderer htmlRenderer = HtmlRenderer.builder().build();
+    @Qualifier("xunfeiProvider")
+    private AiApiProvider aiApiProvider;
 
-    public String generateFortuneReport(String name, String age, String birthdate,String time, String gender) {
+    @Autowired
+    private AutoPptGenerator autoPptGenerator;
+
+    public String generateFortuneReport(String name, String age, String birthdate, String time, String gender) {
         try {
             String template = readExampleTemplate();
             String formattedPrompt = template.replace("{name}", name)
                     .replace("{age}", age)
-                    .replace("{birthdate}", birthdate).replace("{time}", time) .replace("{gender}", gender); // Add gender parameter; // 新增时辰字段
+                    .replace("{birthdate}", birthdate).replace("{time}", time).replace("{gender}", gender); // Add gender parameter; // 新增时辰字段
             // 修改API调用参数
-            String response = AutoPptGenerator.callFortuneApi(
+            String response = aiApiProvider.generateContent(
                     formattedPrompt.replace("\"", "\\\""),
                     "你是一位资深命理学家，精通八字、紫微斗数和现代心理学"
             );

@@ -7,9 +7,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.web.client.RestTemplate;
 
 @SpringBootApplication
-public class AutoPptApplication {
+public class App {
     public static void main(String[] args) {
-        SpringApplication.run(AutoPptApplication.class, args);
+        SpringApplication.run(App.class, args);
     }
 
     @Bean
