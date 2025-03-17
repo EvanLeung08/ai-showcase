@@ -1,5 +1,5 @@
 // PptTemplate.java
-package com.evan.autoppt.utils;
+package com.evan.ai.utils;
 
 import org.apache.poi.sl.usermodel.PictureData;
 import org.apache.poi.xslf.usermodel.XMLSlideShow;

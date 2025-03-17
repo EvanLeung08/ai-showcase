@@ -1,4 +1,4 @@
-package com.evan.autoppt.utils;
+package com.evan.ai.utils;
 
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpUriRequest;

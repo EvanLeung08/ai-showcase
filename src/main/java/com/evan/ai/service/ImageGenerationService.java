@@ -1,6 +1,6 @@
-package com.evan.autoppt.service;
+package com.evan.ai.service;
 
-import com.evan.autoppt.utils.MyUtil;
+import com.evan.ai.utils.MyUtil;
 import com.google.gson.Gson;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.HttpUrl;

@@ -1,4 +1,4 @@
-package com.evan.autoppt.configuration;
+package com.evan.ai.configuration;
 
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;

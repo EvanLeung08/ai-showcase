@@ -1,6 +1,6 @@
-package com.evan.autoppt.service;
+package com.evan.ai.service;
 
-import com.evan.autoppt.provider.AiApiProvider;
+import com.evan.ai.provider.AiApiProvider;
 import org.commonmark.node.Node;
 import org.commonmark.parser.Parser;
 import org.commonmark.renderer.html.HtmlRenderer;

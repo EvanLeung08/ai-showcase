@@ -1,6 +1,6 @@
-package com.evan.autoppt.provider;
+package com.evan.ai.provider;
 
-import com.evan.autoppt.configuration.AIConfig;
+import com.evan.ai.configuration.AIConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;

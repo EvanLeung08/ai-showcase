@@ -1,7 +1,7 @@
-package com.evan.autoppt.controller;
+package com.evan.ai.controller;
 
-import com.evan.autoppt.service.ImageGenerationService;
-import com.evan.autoppt.service.PptService;
+import com.evan.ai.service.ImageGenerationService;
+import com.evan.ai.service.PptService;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,6 +1,6 @@
-package com.evan.autoppt.provider;
+package com.evan.ai.provider;
 
-import com.evan.autoppt.service.AutoPptGenerator;
+import com.evan.ai.service.AutoPptGenerator;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONException;
 import org.json.JSONObject;

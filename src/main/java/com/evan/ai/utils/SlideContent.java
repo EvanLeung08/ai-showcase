@@ -1,5 +1,5 @@
 // SlideContent.java
-package com.evan.autoppt.utils;
+package com.evan.ai.utils;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,4 +1,4 @@
-package com.evan.autoppt.provider;
+package com.evan.ai.provider;
 
 public interface AiApiProvider {
     String generateContent(String prompt, String systemRole) throws Exception;

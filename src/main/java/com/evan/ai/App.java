@@ -1,4 +1,4 @@
-package com.evan.autoppt;
+package com.evan.ai;
 
 
 import org.springframework.boot.SpringApplication;

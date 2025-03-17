@@ -1,8 +1,8 @@
-package com.evan.autoppt.service;
+package com.evan.ai.service;
 
-import com.evan.autoppt.provider.AiApiProvider;
-import com.evan.autoppt.utils.PptTemplate;
-import com.evan.autoppt.utils.SlideContent;
+import com.evan.ai.provider.AiApiProvider;
+import com.evan.ai.utils.PptTemplate;
+import com.evan.ai.utils.SlideContent;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;

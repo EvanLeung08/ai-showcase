@@ -1,7 +1,7 @@
-package com.evan.autoppt.service;
+package com.evan.ai.service;
 
-import com.evan.autoppt.utils.PptTemplate;
-import com.evan.autoppt.utils.SlideContent;
+import com.evan.ai.utils.PptTemplate;
+import com.evan.ai.utils.SlideContent;
 import org.apache.poi.xslf.usermodel.XMLSlideShow;
 import org.apache.poi.xslf.usermodel.XSLFSlide;
 import org.springframework.beans.factory.annotation.Autowired;
