@@ -17,6 +17,7 @@ public class FortuneService {
     // 在类声明后添加渲染器实例
     private static final HtmlRenderer htmlRenderer = HtmlRenderer.builder().build();
     @Qualifier("xunfeiProvider")
+    @Autowired
     private AiApiProvider aiApiProvider;
 
     @Autowired
