@@ -148,6 +148,39 @@ public class XunfeiProvider implements AiApiProvider {
         }
     }
 
+    // 在XunfeiProvider类中添加
+    public static String callTranslateApi(String text, String sourceLang, String targetLang) throws Exception {
+        String requestBody = String.format("""
+    {
+        "model": "4.0Ultra",
+        "messages": [
+            {"role": "system", "content": "你是一个专业翻译引擎，请严格遵循%s到%s的翻译要求"},
+            {"role": "user", "content": "%s"}
+        ],
+        "temperature": 0.1
+    }
+    """, sourceLang, targetLang, text.replace("\"", "\\\""));
+
+        HttpClient client = HttpClient.newBuilder()
+                .connectTimeout(Duration.ofSeconds(30))
+                .build();
+
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(API_ENDPOINT))
+                .header("Content-Type", "application/json")
+                .header("Authorization", "Bearer " + System.getProperty("API_KEY"))
+                .POST(HttpRequest.BodyPublishers.ofString(requestBody))
+                .build();
+
+        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+        JSONObject jsonResponse = new JSONObject(response.body());
+        return jsonResponse.getJSONArray("choices")
+                .getJSONObject(0)
+                .getJSONObject("message")
+                .getString("content");
+    }
+
+
     @Override
     public String generateContent(String prompt, String systemRole) throws Exception {
         return callFortuneApi(prompt, systemRole);
@@ -156,5 +189,11 @@ public class XunfeiProvider implements AiApiProvider {
     @Override
     public String generateWithTemplate(String input, String templateType) throws Exception {
         return callDeepSeekApi(input, templateType);
+    }
+
+    // 在AiApiProvider接口实现中添加
+    @Override
+    public String translateText(String text, String sourceLang, String targetLang) throws Exception {
+        return callTranslateApi(text, sourceLang, targetLang);
     }
 }

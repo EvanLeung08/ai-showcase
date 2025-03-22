@@ -50,5 +50,10 @@ public class OllamaProvider implements AiApiProvider {
        return null;
     }
 
+    @Override
+    public String translateText(String text, String sourceLang, String targetLang) throws Exception {
+        return null;
+    }
+
 
 }

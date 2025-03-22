@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <title>Evan AI Showcase</title>
     <link th:rel="stylesheet" th:href="@{/css/style.css}">
-    <link ref="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <link th:href="@{/css/bootstrap.min.css}" th:rel="stylesheet">
     <script th:src="@{/js/jquery-3.5.1.slim.min.js}"></script>
@@ -48,6 +48,12 @@
             <li class="nav-item">
                 <a class="nav-link" href="#fortune" data-toggle="tab">
                     <i class="fas fa-star mr-2"></i>AI Fortune Telling
+                </a>
+            </li>
+            <!-- 在导航栏添加 -->
+            <li class="nav-item">
+                <a class="nav-link" href="#translation" data-toggle="tab">
+                    <i class="fas fa-language mr-2"></i>AI Translation
                 </a>
             </li>
         </ul>
@@ -146,8 +152,6 @@
                 </div>
             </div>
         </div>
-
-
         <!-- 在现有标签页结构中找到合适的位置添加 -->
         <div class="tab-pane fade" id="imageGeneration">
             <div class="card shadow-lg">
@@ -163,7 +167,8 @@
                         <button type="submit" class="btn btn-success btn-block">Generate Image</button>
                     </form>
                     <div id="imageResult" class="mt-3 text-center" style="display: none;">
-                        <img id="generatedImage" class="img-fluid rounded shadow" style="max-height: 600px;">
+                        <img id="generatedImage" class="img-fluid rounded shadow" alt="Generated image"
+                             style="max-height: 600px;">
                         <div class="mt-3">
                             <button onclick="downloadImage()" class="btn btn-primary">
                                 <i class="fas fa-download mr-2"></i>Download
@@ -224,6 +229,42 @@
                 </div>
             </div>
         </div>
+
+        <!-- translation 模块 -->
+        <div class="tab-pane fade" id="translation">
+            <div class="card shadow-lg">
+                <div class="card-header text-center bg-primary text-white">
+                    <h1>AI Translation</h1>
+                </div>
+                <div class="card-body">
+                    <form id="translationForm">
+
+                        <div class="form-group">
+                            <label>翻译方向</label>
+                            <div class="btn-group btn-group-toggle w-100" data-toggle="buttons">
+                                <label class="btn btn-outline-primary active">
+                                    <input type="radio" name="direction" value="zh2en" checked> 中译英
+                                </label>
+                                <label class="btn btn-outline-primary">
+                                    <input type="radio" name="direction" value="en2zh"> 英译中
+                                </label>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="text">输入文本</label>
+                            <textarea class="form-control" id="text" rows="5"
+                                      placeholder="在此输入需要翻译的内容（最多500字）"></textarea>
+                        </div>
+                        <button type="button" class="btn btn-primary" id="translateButton" onclick="translateText()">
+                            <span id="translateText">Translate</span>
+                            <span id="translateSpinner" class="spinner-border spinner-border-sm" role="status"
+                                  style="display: none;"></span>
+                        </button>
+                    </form>
+                    <div id="translationResult" class="mt-3"></div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 <footer class="footer">
@@ -235,6 +276,7 @@
         </p>
     </div>
 </footer>
+
 
 <!--Navigation-->
 <script>
@@ -497,6 +539,59 @@
          reportDiv.innerHTML = `<div class="alert alert-danger">请求失败：${error.message}</div>`;
      }
  }
+</script>
+
+<script>
+    function translateText() {
+      const direction = document.querySelector('input[name="direction"]:checked').value;
+      const [sourceLang, targetLang] = direction === 'zh2en' ? ['中文', '英文'] : ['英文', '中文'];
+      const text = document.getElementById('text').value;
+
+      const resultDiv = document.getElementById('translationResult');
+      const translateBtn = document.getElementById('translateButton');
+      const spinner = document.getElementById('translateSpinner');
+
+      // 显示加载状态
+      translateBtn.disabled = true;
+      spinner.style.display = 'inline-block';
+      resultDiv.innerHTML = `<div class="alert alert-info text-center">
+          <i class="fas fa-spinner fa-spin"></i> 正在翻译中，请稍候...
+      </div>`;
+
+      fetch('/translate', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({
+              text,
+              sourceLang,
+              targetLang
+          })
+      })
+      .finally(() => {
+          // 无论成功失败都恢复按钮状态
+          translateBtn.disabled = false;
+          spinner.style.display = 'none';
+      })
+          .then(response => {
+              if (!response.ok) throw new Error('服务器错误：' + response.status);
+              return response.json();
+          })
+          .then(data => {
+              const resultDiv = document.getElementById('translationResult');
+              resultDiv.innerHTML = `<div class="alert alert-success">
+                  <p><strong>原文（${sourceLang}）:</strong><br>${text}</p>
+                  <hr>
+                  <p><strong>译文（${targetLang}）:</strong><br>${data.translatedText}</p>
+              </div>`;
+          })
+          .catch(error => {
+              const resultDiv = document.getElementById('translationResult');
+              resultDiv.innerHTML = `<div class="alert alert-danger">
+                  翻译失败：${error.message}
+              </div>`;
+          });
+      }
+
 </script>
 </body>
 </html>
