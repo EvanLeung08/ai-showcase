@@ -248,3 +248,32 @@ fortune report css */
     font-size: 1.5rem;
     margin-right: 0.5rem;
 }
+/*AI阅读*/
+.enhanced-book-notes {
+    background: url('/pic/reading-bg.png') no-repeat center center;
+    background-size: cover;
+    background: linear-gradient(145deg, rgba(18, 22, 40, 0.95), rgba(28, 32, 50, 0.95));
+    border: 1px solid rgba(100, 150, 255, 0.2);
+    border-radius: 15px;
+    box-shadow: 0 8px 32px rgba(50, 100, 255, 0.1);
+    margin: 20px;
+    padding: 20px;
+    backdrop-filter: blur(8px);
+    color: rgba(180, 200, 255, 0.9);
+    line-height: 1.6;
+    transition: all 0.3s ease;
+}
+
+.enhanced-book-notes h1,
+.enhanced-book-notes h2,
+.enhanced-book-notes h3 {
+    color: #fff;
+    text-shadow: 0 0 15px rgba(100, 150, 255, 0.3);
+    margin-bottom: 1rem;
+}
+
+.enhanced-book-notes ul {
+    list-style: disc;
+    margin-left: 1.5em;
+    margin-top: 1rem;
+}

@@ -2,6 +2,7 @@ package com.evan.ai.provider;
 
 import com.evan.ai.service.AutoPptGenerator;
 import lombok.extern.slf4j.Slf4j;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -93,22 +94,22 @@ public class XunfeiProvider implements AiApiProvider {
         return aggregatedContent.toString();
     }
 
-    public static String callFortuneApi(String prompt, String systemRole) throws Exception {
+    public static String callXunfeiApiWithPromptTemplate(String prompt, String systemRole) throws Exception {
         String requestBody = String.format("""
-                            {
-                                "model": "4.0Ultra",
-                                "messages": [
-                                    {"role": "system", "content": "%s"},
-                                    {"role": "user", "content": "%s\\n\\n 请提供详细markdown报告输出。"}
-                                ],
-                                "stream": false,
-                                "temperature": 0.7
-                            }
-                            """,
+                        {
+                            "model": "4.0Ultra",
+                            "messages": [
+                                {"role": "system", "content": "%s"},
+                                {"role": "user", "content": "%s\\n\\n 请提供详细markdown报告输出。"}
+                            ],
+                            "stream": false,
+                            "temperature": 0.7
+                        }
+                        """,
                 systemRole.replace("\"", "\\\""),
                 prompt.replace("\"", "\\\"")
                         .replace("\n", "\\n")
-                        .replace("\\n-", "\\n-"),1);
+                        .replace("\\n-", "\\n-"), 1);
 
         HttpClient client = HttpClient.newBuilder()
                 .connectTimeout(Duration.ofSeconds(120))
@@ -151,15 +152,15 @@ public class XunfeiProvider implements AiApiProvider {
     // 在XunfeiProvider类中添加
     public static String callTranslateApi(String text, String sourceLang, String targetLang) throws Exception {
         String requestBody = String.format("""
-    {
-        "model": "4.0Ultra",
-        "messages": [
-            {"role": "system", "content": "你是一个专业翻译引擎，请严格遵循%s到%s的翻译要求"},
-            {"role": "user", "content": "%s"}
-        ],
-        "temperature": 0.1
-    }
-    """, sourceLang, targetLang, text.replace("\"", "\\\""));
+                {
+                    "model": "4.0Ultra",
+                    "messages": [
+                        {"role": "system", "content": "你是一个专业翻译引擎，请严格遵循%s到%s的翻译要求"},
+                        {"role": "user", "content": "%s"}
+                    ],
+                    "temperature": 0.1
+                }
+                """, sourceLang, targetLang, text.replace("\"", "\\\""));
 
         HttpClient client = HttpClient.newBuilder()
                 .connectTimeout(Duration.ofSeconds(30))
@@ -183,7 +184,8 @@ public class XunfeiProvider implements AiApiProvider {
 
     @Override
     public String generateContent(String prompt, String systemRole) throws Exception {
-        return callFortuneApi(prompt, systemRole);
+
+        return callXunfeiApiWithPromptTemplate(prompt, systemRole);
     }
 
     @Override
@@ -195,5 +197,55 @@ public class XunfeiProvider implements AiApiProvider {
     @Override
     public String translateText(String text, String sourceLang, String targetLang) throws Exception {
         return callTranslateApi(text, sourceLang, targetLang);
+    }
+
+    public String processDocument(String fileName, String content) throws Exception {
+        // 添加PDF内容过滤逻辑
+        String sanitizedContent = content.replaceAll("[\\x00-\\x1F\\x7F]", "") // 移除控制字符
+                                    .replaceAll("\\s+", " ") // 合并连续空白
+                                    .substring(0, Math.min(3000, content.length()));
+
+        String template = """
+            请分析以下文档：
+            文件名：%s
+            内容：%s
+            
+            要求：
+            1. 提取章节结构
+            2. 总结核心观点
+            3. 输出Markdown格式
+            """.formatted(fileName, sanitizedContent);
+
+        return callDocumentApi(template);
+    }
+
+    // 修改API调用方法
+    private String callDocumentApi(String prompt) throws Exception {
+        JSONObject requestBody = new JSONObject();
+        requestBody.put("model", "4.0Ultra");
+        HttpClient client = HttpClient.newBuilder()
+                .connectTimeout(Duration.ofSeconds(30))
+                .build();
+        JSONArray messages = new JSONArray();
+        messages.put(new JSONObject().put("role", "system").put("content", "专业文档分析引擎"));
+        messages.put(new JSONObject().put("role", "user").put("content", prompt));
+        requestBody.put("messages", messages);
+
+        requestBody.put("temperature", 0.3);
+        requestBody.put("max_tokens", 4096);
+
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(API_ENDPOINT))
+                .header("Content-Type", "application/json")
+                .header("Authorization", "Bearer " + System.getProperty("API_KEY"))
+                .POST(HttpRequest.BodyPublishers.ofString(requestBody.toString()))
+                .build();
+
+        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+        JSONObject jsonResponse = new JSONObject(response.body());
+        return jsonResponse.getJSONArray("choices")
+                .getJSONObject(0)
+                .getJSONObject("message")
+                .getString("content");
     }
 }
