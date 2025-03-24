@@ -1,11 +1,15 @@
 package com.evan.ai.controller;
 
+import com.evan.ai.service.AutoPptGenerator;
 import com.evan.ai.service.ImageGenerationService;
 import com.evan.ai.service.PptService;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -13,6 +17,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Controller
@@ -21,6 +28,8 @@ public class PptController {
     @Autowired
     private PptService pptService;
 
+    @Autowired  // 添加这个自动注入
+    private AutoPptGenerator autoPptGenerator;
     @Autowired
     private ImageGenerationService imageGenerationService;
 
@@ -85,6 +94,64 @@ public class PptController {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    // 在PptController类中添加
+    @PostMapping("/getMnemonicWithImages")
+    @ResponseBody
+    public List<MnemonicWithImageDTO> getMnemonicWithImages(
+            @RequestParam("prompt") String prompt) throws Exception {
+
+        String decodedPrompt = URLDecoder.decode(prompt, StandardCharsets.UTF_8.name());
+        String markdownContent = autoPptGenerator.callDeepSeekApi(decodedPrompt, "mnemonics");
+
+        return Arrays.stream(decodedPrompt.split(","))
+                .map(String::trim)
+                .map(word -> {
+                    String mnemonic = extractMnemonicContent(markdownContent, word);
+                    List<String> images = generateMnemonicImages(mnemonic);
+                    return new MnemonicWithImageDTO(word, mnemonic, images);
+                }).collect(Collectors.toList());
+    }
+
+    private String extractMnemonicContent(String markdown, String word) {
+        // 实现从markdown中提取特定单词的助记内容
+        Pattern pattern = Pattern.compile("# " + word + "([\\s\\S]*?)(?=#|$)");
+        Matcher matcher = pattern.matcher(markdown);
+        return matcher.find() ? matcher.group(1).trim() : "未找到助记信息";
+    }
+
+    private List<String> generateMnemonicImages(String mnemonic) {
+        // 从助记文本中提取关键词生成图片
+        List<String> prompts = extractImagePrompts(mnemonic);
+        return prompts.stream()
+                .map(prompt -> {
+                    try {
+                        return imageGenerationService.generateImage(prompt);
+                    } catch (Exception e) {
+                        log.error("图片生成失败", e);
+                        return "";
+                    }
+                }).filter(StringUtils::hasText)
+                .collect(Collectors.toList());
+    }
+
+    private List<String> extractImagePrompts(String mnemonic) {
+        // 使用正则提取联想词，示例匹配 "联想记忆：[内容]"
+        Pattern pattern = Pattern.compile("联想记忆：([^\\n]+)");
+        Matcher matcher = pattern.matcher(mnemonic);
+        return matcher.find() ?
+                Arrays.asList(matcher.group(1).split("，")) :
+                Collections.emptyList();
+    }
+
+    // 添加DTO类
+    @Data
+    @AllArgsConstructor
+    static class MnemonicWithImageDTO {
+        private String word;
+        private String mnemonic;
+        private List<String> images;
     }
 
 }
