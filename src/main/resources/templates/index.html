@@ -133,13 +133,13 @@
                                 Please enter up to 5 words, separated by commas.
                             </div>
                         </div>
-                        <div class="form-group">
+                     <!--   <div class="form-group">
                             <label for="generationTypePreview">Select Generation Type:</label>
                             <select id="generationTypePreview" name="generationType" class="form-control">
                                 <option value="story">Word Story</option>
                                 <option value="mnemonics" selected>Word Mnemonics</option>
                             </select>
-                        </div>
+                        </div>-->
                         <button type="button" id="previewButton" class="btn btn-primary btn-block"
                                 onclick="previewPpt()">Preview
                         </button>
@@ -460,22 +460,22 @@ function renderMnemonicWithImages(data) {
             <div class="card-header bg-info text-white">
                 <h5>${item.word}</h5>
             </div>
-            <div class="card-body">
+            <div class="card-body markdown-body">  <!-- 添加markdown-body类 -->
                 <div class="row">
                     <div class="col-md-6">
                         <div class="mb-3">
                             <h6>记忆技巧：</h6>
-                            <pre class="bg-light p-3 rounded">${item.mnemonic}</pre>
+                            <div class="bg-light p-3 rounded">${item.mnemonic}</div>
                         </div>
                     </div>
                     <div class="col-md-6">
-                        <div class="image-gallery">
-                            ${item.images.map(img => `
-                                <img src="data:image/png;base64,${img}"
-                                     class="img-thumbnail mb-2"
-                                     style="max-height: 300px;">
-                            `).join('')}
-                        </div>
+<div class="image-gallery">
+    ${item.images.slice(0,1).map(image => `
+        <img src="data:image/png;base64,${image}"
+             class="img-fluid rounded shadow mb-3"
+             style="max-height: 300px;">
+    `).join('')}
+</div>
                     </div>
                 </div>
             </div>
@@ -489,7 +489,7 @@ function renderMnemonicWithImages(data) {
         }
 
         var prompt = document.getElementById("promptPreview").value;
-        var generationType = document.getElementById("generationTypePreview").value;
+       // var generationType = document.getElementById("generationTypePreview").value;
         var progressBar = document.getElementById("progressBar");
         var progressStatus = document.getElementById("progressStatus");
         var progressContainer = document.getElementById("progressContainer");

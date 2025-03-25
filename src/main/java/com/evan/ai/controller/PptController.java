@@ -7,6 +7,9 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
+import org.commonmark.node.Node;
+import org.commonmark.parser.Parser;
+import org.commonmark.renderer.html.HtmlRenderer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
@@ -28,6 +31,7 @@ public class PptController {
     @Autowired
     private PptService pptService;
 
+    private static final HtmlRenderer htmlRenderer = HtmlRenderer.builder().build();
     @Autowired  // 添加这个自动注入
     private AutoPptGenerator autoPptGenerator;
     @Autowired
@@ -50,10 +54,11 @@ public class PptController {
         }
         return response;
     }
+
     // PptController.java
     @PostMapping("/preview")
     @ResponseBody
-    public List<String> previewPpt(@RequestParam("prompt") String prompt, @RequestParam("generationType") String generationType) {
+    public List<String> preview(@RequestParam("prompt") String prompt, @RequestParam("generationType") String generationType) {
         try {
             String decodedPrompt = URLDecoder.decode(prompt, StandardCharsets.UTF_8.name());
             List<byte[]> images = pptService.convertPptToImages(decodedPrompt, generationType);
@@ -115,16 +120,21 @@ public class PptController {
     }
 
     private String extractMnemonicContent(String markdown, String word) {
-        // 实现从markdown中提取特定单词的助记内容
         Pattern pattern = Pattern.compile("# " + word + "([\\s\\S]*?)(?=#|$)");
         Matcher matcher = pattern.matcher(markdown);
-        return matcher.find() ? matcher.group(1).trim() : "未找到助记信息";
+        String rawContent = matcher.find() ? matcher.group(1).trim() : "未找到助记信息";
+
+        // 新增Markdown转换逻辑
+        Parser parser = Parser.builder().build();
+        Node document = parser.parse(rawContent);
+        return htmlRenderer.render(document);
     }
 
     private List<String> generateMnemonicImages(String mnemonic) {
-        // 从助记文本中提取关键词生成图片
+        // 从助记文本中提取关键词生成图片（修改为只保留第一张有效图片）
         List<String> prompts = extractImagePrompts(mnemonic);
         return prompts.stream()
+                .findFirst() // 只取第一个联想记忆提示词
                 .map(prompt -> {
                     try {
                         return imageGenerationService.generateImage(prompt);
@@ -132,8 +142,10 @@ public class PptController {
                         log.error("图片生成失败", e);
                         return "";
                     }
-                }).filter(StringUtils::hasText)
-                .collect(Collectors.toList());
+                })
+                .filter(StringUtils::hasText)
+                .map(Collections::singletonList) // 包装成单元素列表
+                .orElse(Collections.emptyList());
     }
 
     private List<String> extractImagePrompts(String mnemonic) {
