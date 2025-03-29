@@ -62,6 +62,12 @@
                     <i class="fas fa-book-reader mr-2"></i>AI Reading
                 </a>
             </li>
+
+            <li class="nav-item">
+                <a class="nav-link" href="#copilot" data-toggle="tab">
+                    <i class="fas fa-robot mr-2"></i>AI Copilot
+                </a>
+            </li>
         </ul>
     </div>
 </nav>
@@ -317,6 +323,45 @@
                         </p>
                     </div>
                     <div id="bookResult" class="mt-3"></div>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="tab-pane fade" id="copilot">
+            <div class="card shadow-lg">
+                <div class="card-header bg-info text-dark">
+                    <h4 class="mb-0">GitHub Copilot Chat</h4>
+                </div>
+                <div class="card-body">
+                    <!-- 授权状态显示 -->
+                    <div id="authStatus" class="alert alert-info" style="display:none;">
+                        <div id="userCodeDisplay"></div>
+                        <a id="verificationLink" target="_blank" class="btn btn-sm btn-success mt-2">
+                            <i class="fas fa-external-link-alt"></i> 前往授权
+                        </a>
+                    </div>
+
+                    <!-- 聊天界面 -->
+                    <div id="chatInterface" style="display:none;">
+                        <div class="chat-messages mb-3"
+                             style="height: 400px; overflow-y: auto; border: 1px solid #ddd; border-radius: 5px; padding: 15px;">
+                        </div>
+                        <div class="input-group">
+                    <textarea id="chatInput" class="form-control"
+                              placeholder="输入您的问题..." rows="3"></textarea>
+                            <div class="input-group-append">
+                                <button class="btn btn-primary" onclick="sendMessage()">
+                                    <i class="fas fa-paper-plane"></i> 发送
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 未授权时的操作按钮 -->
+                    <button id="startAuth" class="btn btn-dark btn-block" onclick="startCopilotAuth()">
+                        <i class="fab fa-github mr-2"></i>授权GitHub账户
+                    </button>
                 </div>
             </div>
         </div>
@@ -785,5 +830,122 @@ function concatUint8Arrays(arrays) {
 
 </script>
 
+<script th:inline="javascript">
+    // 在现有脚本后添加以下代码
+let isAuthorizing = false;
+
+async function startCopilotAuth() {
+    if (isAuthorizing) return;
+    isAuthorizing = true;
+
+    const authBtn = document.getElementById('startAuth');
+    authBtn.disabled = true;
+    authBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 获取授权码...';
+
+    try {
+        const response = await fetch('/copilot/auth');
+        const data = await response.json();
+
+        document.getElementById('userCodeDisplay').innerHTML = `
+            <h5>用户验证码：</h5>
+            <div class="alert alert-secondary py-1 px-3 d-inline-block">
+                <h2 class="mb-0">${data.userCode}</h2>
+            </div>
+            <p class="mt-2 mb-0">请访问以下链接完成授权，授权成功后进入聊天模式：</p>
+        `;
+
+        const link = document.getElementById('verificationLink');
+        link.href = data.verificationUri;
+        link.innerHTML = `<i class="fas fa-external-link-alt"></i> ${data.verificationUri}`;
+
+        document.getElementById('authStatus').style.display = 'block';
+        authBtn.style.display = 'none';
+        pollAuthStatus();
+
+    } catch (error) {
+        showMessage("获取授权码失败：" + error.message, "authStatus", "userCodeDisplay");
+    } finally {
+        isAuthorizing = false;
+        authBtn.disabled = false;
+        authBtn.innerHTML = '<i class="fab fa-github mr-2"></i>授权GitHub账户';
+    }
+}
+
+async function pollAuthStatus() {
+const url = `/copilot/callback`;
+    const checkStatus = async () => {
+        try {
+            const response = await fetch(url);
+            if (response.status === 200) {
+                document.getElementById('authStatus').style.display = 'none';
+                document.getElementById('chatInterface').style.display = 'block';
+                return true;
+            }
+        } catch (e) {
+            console.error('授权状态检查失败:', e);
+        }
+        return false;
+    };
+
+    const interval = setInterval(async () => {
+        if (await checkStatus()) {
+            clearInterval(interval);
+        }
+    }, 20000);
+}
+
+async function sendMessage() {
+    const input = document.getElementById('chatInput');
+    const message = input.value.trim();
+    if (!message) return;
+
+    const chatWindow = document.querySelector('.chat-messages');
+
+    // 添加用户消息
+    chatWindow.innerHTML += `
+        <div class="alert alert-primary mb-2 p-2">
+            <strong>You:</strong> ${message}
+        </div>
+    `;
+
+    // 添加加载状态
+    chatWindow.innerHTML += `
+        <div class="alert alert-secondary mb-2 p-2">
+            <i class="fas fa-spinner fa-spin"></i> 思考中...
+        </div>
+    `;
+
+    try {
+        const response = await fetch('/copilot/chat', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ message })
+        });
+
+        const data = await response.json();
+
+        // 移除加载状态
+        chatWindow.lastElementChild.remove();
+
+        // 添加AI响应（支持Markdown渲染）
+        chatWindow.innerHTML += `
+            <div class="alert alert-success mb-2 p-2">
+                <strong>AI:</strong> ${marked.parse(data.response)}
+            </div>
+        `;
+
+    } catch (error) {
+        chatWindow.lastElementChild.remove();
+        chatWindow.innerHTML += `
+            <div class="alert alert-danger mb-2 p-2">
+                <strong>Error:</strong> ${error.message}
+            </div>
+        `;
+    }
+
+    input.value = '';
+    chatWindow.scrollTop = chatWindow.scrollHeight;
+}
+</script>
 </body>
 </html>
