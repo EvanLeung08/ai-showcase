@@ -139,13 +139,13 @@
                                 Please enter up to 5 words, separated by commas.
                             </div>
                         </div>
-                     <!--   <div class="form-group">
-                            <label for="generationTypePreview">Select Generation Type:</label>
-                            <select id="generationTypePreview" name="generationType" class="form-control">
-                                <option value="story">Word Story</option>
-                                <option value="mnemonics" selected>Word Mnemonics</option>
-                            </select>
-                        </div>-->
+                        <!--   <div class="form-group">
+                               <label for="generationTypePreview">Select Generation Type:</label>
+                               <select id="generationTypePreview" name="generationType" class="form-control">
+                                   <option value="story">Word Story</option>
+                                   <option value="mnemonics" selected>Word Mnemonics</option>
+                               </select>
+                           </div>-->
                         <button type="button" id="previewButton" class="btn btn-primary btn-block"
                                 onclick="previewPpt()">Preview
                         </button>
@@ -348,24 +348,30 @@
                              style="height: 400px; overflow-y: auto; border: 1px solid #ddd; border-radius: 5px; padding: 15px;">
                         </div>
                         <div class="input-group">
-                    <textarea id="chatInput" class="form-control"
-                              placeholder="输入您的问题..." rows="3"></textarea>
+    <textarea id="chatInput" class="form-control"
+              placeholder="输入您的问题..." rows="3"></textarea>
                             <div class="input-group-append">
+                                <!-- 新增按钮 -->
+                                <button class="btn btn-secondary mr-2" onclick="startNewChat()"
+                                        title="清除对话历史">
+                                    <i class="fas fa-comment-slash"></i> 新对话
+                                </button>
                                 <button class="btn btn-primary" onclick="sendMessage()">
                                     <i class="fas fa-paper-plane"></i> 发送
                                 </button>
                             </div>
                         </div>
                     </div>
-
-                    <!-- 未授权时的操作按钮 -->
-                    <button id="startAuth" class="btn btn-dark btn-block" onclick="startCopilotAuth()">
-                        <i class="fab fa-github mr-2"></i>授权GitHub账户
-                    </button>
                 </div>
+
+                <!-- 未授权时的操作按钮 -->
+                <button id="startAuth" class="btn btn-dark btn-block" onclick="startCopilotAuth()">
+                    <i class="fab fa-github mr-2"></i>授权GitHub账户
+                </button>
             </div>
         </div>
     </div>
+</div>
 </div>
 <footer class="footer">
     <div class="container">
@@ -851,7 +857,7 @@ async function startCopilotAuth() {
             <div class="alert alert-secondary py-1 px-3 d-inline-block">
                 <h2 class="mb-0">${data.userCode}</h2>
             </div>
-            <p class="mt-2 mb-0">请访问以下链接完成授权，授权成功后进入聊天模式：</p>
+            <p class="mt-2 mb-0">请访问以下链接完成授权，授权成功后20秒自动进入聊天模式：</p>
         `;
 
         const link = document.getElementById('verificationLink');
@@ -945,6 +951,20 @@ async function sendMessage() {
 
     input.value = '';
     chatWindow.scrollTop = chatWindow.scrollHeight;
+}
+    async function startNewChat() {
+    try {
+        const response = await fetch('/copilot/new_chat', {
+            method: 'GET'
+        });
+        if (response.ok) {
+            document.querySelector('.chat-messages').innerHTML = '';
+            showMessage('已开启新对话，上下文历史已清除', 'chatInterface');
+        }
+    } catch (error) {
+        console.error('新对话创建失败:', error);
+        showMessage('新对话创建失败，请重试', 'chatInterface');
+    }
 }
 </script>
 </body>
