@@ -42,6 +42,7 @@ public class CopilotChatService {
                 session.setAttribute("copilot_token", copilotToken);
             }catch (Exception e) {
                 log.error("获取Copilot令牌失败", e);
+                session.setAttribute("copilot_token", null);
                 return "你可能不是Github Copilot用户，请先开通Github Copilot! 详细信息: " + e.getMessage();
             }
         }else {
