@@ -69,9 +69,9 @@ public class CopilotChatService {
                 // 获取Copilot令牌
                 HttpHeaders tokenHeaders = new HttpHeaders();
                 tokenHeaders.setBearerAuth(accessToken);
-                tokenHeaders.add("Editor-Version", "Neovim/0.6.1");
+           /*     tokenHeaders.add("Editor-Version", "Neovim/0.6.1");
                 tokenHeaders.add("User-Agent", "GitHubCopilot/1.155.0");
-                tokenHeaders.add("Editor-Plugin-Version", "copilot.vim/1.16.0");
+                tokenHeaders.add("Editor-Plugin-Version", "copilot.vim/1.16.0");*/
                 tokenHeaders.add("Accept", "application/json");
                 ResponseEntity<Map> tokenResponse = restTemplate.exchange(
                         "https://api.github.com/copilot_internal/v2/token",
@@ -118,9 +118,12 @@ public class CopilotChatService {
         HttpHeaders headers = new HttpHeaders();
         headers.setBearerAuth(copilotToken);
         headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.add("Editor-Version", "vscode/1.93.1");
+        /*headers.add("Editor-Version", "vscode/1.93.1");
         headers.add("User-Agent", "GitHubCopilot/1.155.0");
-        headers.add("Editor-Plugin-Version", "copilot-chat/0.20.3");
+        headers.add("Editor-Plugin-Version", "copilot-chat/0.20.3");*/
+        headers.add("Editor-Version", "vscode/1.96.2");
+        headers.add("User-Agent", "GitHubCopilot/1.270.0");
+        headers.add("Editor-Plugin-Version", "copilot-chat/0.23.2");
         headers.add("Accept", "application/json");
         Map<String, Object> request = new HashMap<>();
         request.put("model", "gpt-4o-2024-05-13");//copilot-chat

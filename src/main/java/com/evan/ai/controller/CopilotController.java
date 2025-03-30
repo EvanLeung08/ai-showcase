@@ -34,9 +34,9 @@ public class CopilotController {
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-        headers.add("Editor-Version", "Neovim/0.6.1");
+       /* headers.add("Editor-Version", "Neovim/0.6.1");
         headers.add("User-Agent", "GitHubCopilot/1.155.0");
-        headers.add("Editor-Plugin-Version", "copilot.vim/1.16.0");
+        headers.add("Editor-Plugin-Version", "copilot.vim/1.16.0");*/
         headers.add("Accept", "application/json");
         ResponseEntity<Map> response = restTemplate.postForEntity(
                 "https://github.com/login/device/code",
@@ -67,9 +67,9 @@ public class CopilotController {
             params.add("grant_type", "urn:ietf:params:oauth:grant-type:device_code");
 
             HttpHeaders headers = new HttpHeaders();
-            headers.add("Editor-Version", "Neovim/0.6.1");
+           /* headers.add("Editor-Version", "Neovim/0.6.1");
             headers.add("User-Agent", "GitHubCopilot/1.155.0");
-            headers.add("Editor-Plugin-Version", "copilot.vim/1.16.0");
+            headers.add("Editor-Plugin-Version", "copilot.vim/1.16.0");*/
             headers.add("Accept", "application/json");
             ResponseEntity<Map> response = restTemplate.postForEntity(
                     "https://github.com/login/oauth/access_token",

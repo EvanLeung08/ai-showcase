@@ -13,5 +13,6 @@ public class AIConfig {
     private String ollamaEndpoint;
     private String githubClientId;
     private String githubClientSecret;
-    private String copilotApiUrl = "https://api.githubcopilot.com/chat/completions";
+    private String copilotApiUrl = "https://api.githubcopilot.com/chat/completions";//embeddings
+
 }
