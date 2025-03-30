@@ -156,5 +156,57 @@ public class CopilotChatService {
         return chatHistory;
     }
 
+    // 在类中添加以下静态成员和方法
+    private static CopilotChatService instance;
+
+    @Autowired
+    public CopilotChatService(AIConfig config, CopilotConfig copilotConfig, RestTemplate restTemplate) {
+        this.config = config;
+        this.copilotConfig = copilotConfig;
+        this.restTemplate = restTemplate;
+        instance = this;
+    }
+
+    public static CopilotChatService getInstance() {
+        if (instance == null) {
+            throw new IllegalStateException("CopilotChatService 尚未初始化");
+        }
+        return instance;
+    }
+
+    public String getCompletion(String prompt) {
+        try {
+            HttpHeaders headers = new HttpHeaders();
+            headers.setBearerAuth(getSystemToken());
+            headers.setContentType(MediaType.APPLICATION_JSON);
+            headers.add("User-Agent", "evanai-autoppt/1.0");
+
+            Map<String, Object> requestBody = new HashMap<>();
+            requestBody.put("model", "gpt-4");
+            requestBody.put("temperature", 0.2);
+            requestBody.put("messages", List.of(
+                    Map.of("role", "system", "content", "你是一个严谨的知识问答助手"),
+                    Map.of("role", "user", "content", prompt)
+            ));
+
+            ResponseEntity<Map> response = restTemplate.postForEntity(
+                    config.getCopilotApiUrl(),
+                    new HttpEntity<>(requestBody, headers),
+                    Map.class
+            );
+
+            return response.getBody().get("choices").toString();
+        } catch (Exception e) {
+            log.error("知识问答请求失败", e);
+            return "答案生成失败: " + e.getMessage();
+        }
+    }
+
+    // 在类中添加私有方法
+    private String getSystemToken() {
+        // 这里实现获取系统级访问令牌的逻辑
+        return "sk-system-token-example";
+    }
+
 
 }

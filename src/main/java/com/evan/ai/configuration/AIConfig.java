@@ -14,5 +14,7 @@ public class AIConfig {
     private String githubClientId;
     private String githubClientSecret;
     private String copilotApiUrl = "https://api.githubcopilot.com/chat/completions";//embeddings
+    // 保持原有配置不变的情况下新增
+    private String embeddingModel = "copilot-text-embedding-ada-002";
 
 }
