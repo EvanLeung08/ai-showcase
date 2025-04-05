@@ -916,7 +916,12 @@ async function startCopilotAuth() {
 
         document.getElementById('authStatus').style.display = 'block';
         authBtn.style.display = 'none';
-        pollAuthStatus();
+
+       // 新增点击事件监听
+link.addEventListener('click', function(e) {
+    pollAuthStatus();  // 触发轮询
+    return true;
+});
 
     } catch (error) {
         showMessage("获取授权码失败：" + error.message, "authStatus", "userCodeDisplay");

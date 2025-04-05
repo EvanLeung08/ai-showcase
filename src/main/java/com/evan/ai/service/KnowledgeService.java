@@ -129,12 +129,13 @@ public class KnowledgeService {
 
             // 5. 复用Copilot基础设施（添加异常处理）
             String accessToken = (String) session.getAttribute("access_token");
-            return copilotChatService.getCopilotResponse(prompt,accessToken,session);
+            return copilotChatService.getCopilotResponse(prompt, accessToken, session);
         } catch (Exception e) {
             log.error("知识问答失败 sessionId={}", session.getId(), e);
             return "系统繁忙，请稍后再试。错误详情：" + e.getMessage();
         }
     }
+
     // 在类中添加以下方法（放在getAnswer方法附近）
     private float[] convertToFloatArray(List<Double> embedding) {
         float[] floats = new float[embedding.size()];
@@ -143,6 +144,7 @@ public class KnowledgeService {
         }
         return floats;
     }
+
     private String buildPrompt(String question, List<String> contexts) {
         return String.format("基于以下知识回答问题：\n%s\n\n问题：%s",
                 String.join("\n", contexts), question);

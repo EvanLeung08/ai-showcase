@@ -1,6 +1,7 @@
 package com.evan.ai.controller;
 
 import com.evan.ai.configuration.AIConfig;
+import com.evan.ai.service.CopilotChatService;
 import jakarta.servlet.http.HttpSession;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +25,9 @@ public class CopilotController {
     private AIConfig config;
     @Autowired
     private RestTemplate restTemplate;
+
+    @Autowired
+    CopilotChatService copilotChatService;
 
     @GetMapping("/copilot/auth")
     public ResponseEntity<?> startAuth(HttpSession session) {
@@ -56,7 +60,7 @@ public class CopilotController {
     @GetMapping("/copilot/callback")
     public ResponseEntity<?> handleCallback(
             HttpSession session) {
-        if(session.getAttribute("access_token")!=null&& !session.getAttribute("access_token").toString().isEmpty()) {
+        if (session.getAttribute("access_token") != null && !session.getAttribute("access_token").toString().isEmpty()) {
             return ResponseEntity.ok(Map.of("status", "authorized"));
         }
         try {
@@ -82,8 +86,15 @@ public class CopilotController {
             }
             session.setAttribute("access_token", tokenResponse.get("access_token"));
 
+            // 获取Copilot令牌
+            String copilotToken = copilotChatService.getCopilotToken(tokenResponse.get("access_token"), session);
+            if (copilotToken == null || copilotToken.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("获取Copilot令牌失败");
+            }
+            session.setAttribute("copilot_token", copilotToken);
+
             return ResponseEntity.ok(Map.of("status", "authorized"));
-        }catch (Exception ex){
+        } catch (Exception ex) {
             log.error("获取授权失败", ex);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("获取授权失败");
         }

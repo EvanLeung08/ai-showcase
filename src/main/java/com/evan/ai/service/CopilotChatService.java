@@ -61,7 +61,8 @@ public class CopilotChatService {
         }
     }
 
-    public String getCopilotResponse(String message, String accessToken, HttpSession session) {
+    public String getCopilotToken(String accessToken, HttpSession session) {
+
         String copilotToken = null;
         if (session.getAttribute("copilot_token") == null ||
                 session.getAttribute("copilot_token").toString().isEmpty()) {
@@ -69,9 +70,6 @@ public class CopilotChatService {
                 // 获取Copilot令牌
                 HttpHeaders tokenHeaders = new HttpHeaders();
                 tokenHeaders.setBearerAuth(accessToken);
-           /*     tokenHeaders.add("Editor-Version", "Neovim/0.6.1");
-                tokenHeaders.add("User-Agent", "GitHubCopilot/1.155.0");
-                tokenHeaders.add("Editor-Plugin-Version", "copilot.vim/1.16.0");*/
                 tokenHeaders.add("Accept", "application/json");
                 ResponseEntity<Map> tokenResponse = restTemplate.exchange(
                         "https://api.github.com/copilot_internal/v2/token",
@@ -80,18 +78,24 @@ public class CopilotChatService {
                         Map.class);
 
                 copilotToken = tokenResponse.getBody().get("token").toString();
-                session.setAttribute("copilot_token", copilotToken);
             } catch (Exception e) {
                 log.error("获取Copilot令牌失败", e);
-                session.setAttribute("copilot_token", null);
-                return "你可能不是Github Copilot用户，请先开通Github Copilot! 详细信息: " + e.getMessage();
             }
         } else {
             copilotToken = session.getAttribute("copilot_token").toString();
         }
+        return copilotToken;
+    }
 
-        if (copilotToken == null || copilotToken.isEmpty()) {
-            return "用户未授权，请重新授权!";
+
+    public String getCopilotResponse(String message, String accessToken, HttpSession session) {
+        String copilotToken = null;
+        if (session.getAttribute("copilot_token") == null ||
+                session.getAttribute("copilot_token").toString().isEmpty()) {
+            copilotToken = getCopilotToken(accessToken, session);
+            session.setAttribute("copilot_token", copilotToken);
+        } else {
+            copilotToken = session.getAttribute("copilot_token").toString();
         }
 
         List<Map<String, String>> history = chatHistory.computeIfAbsent(session.getId(), k -> new ArrayList<>());
