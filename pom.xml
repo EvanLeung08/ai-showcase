@@ -8,7 +8,7 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.evan</groupId>
-    <artifactId>ai-showcase</artifactId>
+    <artifactId>evan-ai-hub</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>autoppt</name>
     <description>Demo project for Spring Boot</description>
