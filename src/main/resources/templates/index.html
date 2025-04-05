@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>Evan AI Showcase</title>
+    <title>Evan AI HUB</title>
     <link th:rel="stylesheet" th:href="@{/css/style.css}">
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
@@ -16,7 +16,7 @@
 
 <body>
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-    <a class="navbar-brand" href="#">Evan AI Showcase</a>
+    <a class="navbar-brand" href="#">Evan AI HUB</a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
             aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
@@ -60,6 +60,18 @@
             <li class="nav-item">
                 <a class="nav-link" href="#book" data-toggle="tab">
                     <i class="fas fa-book-reader mr-2"></i>AI Reading
+                </a>
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link" href="#copilot" data-toggle="tab">
+                    <i class="fas fa-robot mr-2"></i>AI Copilot
+                </a>
+            </li>
+            <!-- 在导航栏添加 -->
+            <li class="nav-item">
+                <a class="nav-link" href="#knowledge" data-toggle="tab">
+                    <i class="fas fa-graduation-cap mr-2"></i>知识问答
                 </a>
             </li>
         </ul>
@@ -133,13 +145,13 @@
                                 Please enter up to 5 words, separated by commas.
                             </div>
                         </div>
-                     <!--   <div class="form-group">
-                            <label for="generationTypePreview">Select Generation Type:</label>
-                            <select id="generationTypePreview" name="generationType" class="form-control">
-                                <option value="story">Word Story</option>
-                                <option value="mnemonics" selected>Word Mnemonics</option>
-                            </select>
-                        </div>-->
+                        <!--   <div class="form-group">
+                               <label for="generationTypePreview">Select Generation Type:</label>
+                               <select id="generationTypePreview" name="generationType" class="form-control">
+                                   <option value="story">Word Story</option>
+                                   <option value="mnemonics" selected>Word Mnemonics</option>
+                               </select>
+                           </div>-->
                         <button type="button" id="previewButton" class="btn btn-primary btn-block"
                                 onclick="previewPpt()">Preview
                         </button>
@@ -320,7 +332,96 @@
                 </div>
             </div>
         </div>
+
+
+        <div class="tab-pane fade" id="copilot">
+            <div class="card shadow-lg">
+                <div class="card-header text-center bg-primary  text-dark">
+                    <h1>GitHub Copilot Chat</h1>
+                </div>
+                <div class="card-body">
+                    <!-- 授权状态显示 -->
+                    <div id="authStatus" class="alert alert-info" style="display:none;">
+                        <div id="userCodeDisplay"></div>
+                        <a id="verificationLink" target="_blank" class="btn btn-sm btn-success mt-2">
+                            <i class="fas fa-external-link-alt"></i> 前往授权
+                        </a>
+                    </div>
+
+                    <!-- 聊天界面 -->
+                    <div id="chatInterface" style="display:none;">
+                        <div class="chat-messages mb-3"
+                             style="height: 400px; overflow-y: auto; border: 1px solid #ddd; border-radius: 5px; padding: 15px;">
+                        </div>
+                        <div class="input-group">
+    <textarea id="chatInput" class="form-control"
+              placeholder="输入您的问题..." rows="3"></textarea>
+                            <div class="input-group-append">
+                                <!-- 新增按钮 -->
+                                <button class="btn btn-secondary mr-2" onclick="startNewChat()"
+                                        title="清除对话历史">
+                                    <i class="fas fa-comment-slash"></i> 新对话
+                                </button>
+                                <button class="btn btn-primary" onclick="sendMessage()">
+                                    <i class="fas fa-paper-plane"></i> 发送
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 未授权时的操作按钮 -->
+                <button id="startAuth" class="btn btn-dark btn-block" onclick="startCopilotAuth()">
+                    <i class="fab fa-github mr-2"></i>授权GitHub账户
+                </button>
+            </div>
+        </div>
+
+        <!-- 在标签页区域添加 -->
+        <div class="tab-pane fade" id="knowledge">
+            <div class="card shadow-lg">
+                <div class="card-header text-center bg-primary  text-dark">
+                    <h1>知识问答系统</h1>
+                </div>
+                <div class="card-body">
+                    <!-- 文件上传区域 -->
+                    <div class="mb-4">
+                        <form id="knowledgeForm" enctype="multipart/form-data">
+                            <div class="custom-file">
+                                <input type="file" class="custom-file-input" id="knowledgeFile"
+                                       accept=".txt,.pdf,.md" multiple>
+                                <label class="custom-file-label" for="knowledgeFile">选择知识文件</label>
+                            </div>
+                            <button type="submit" class="btn btn-primary mt-3">
+                                <i class="fas fa-upload mr-2"></i>上传并构建知识库
+                            </button>
+                        </form>
+                        <div id="uploadProgress" class="mt-3" style="display:none;">
+                            <div class="progress">
+                                <div class="progress-bar progress-bar-striped" role="progressbar"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 问答交互区域 -->
+                    <div id="qaInterface">
+                        <div class="chat-messages mb-3"
+                             style="height: 300px; overflow-y: auto; border: 1px solid #ddd;"></div>
+                        <div class="input-group">
+                    <textarea id="qaInput" class="form-control"
+                              placeholder="输入您的问题..." rows="2"></textarea>
+                            <div class="input-group-append">
+                                <button class="btn btn-success" onclick="askQuestion()">
+                                    <i class="fas fa-paper-plane"></i> 提问
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
+</div>
 </div>
 <footer class="footer">
     <div class="container">
@@ -785,5 +886,238 @@ function concatUint8Arrays(arrays) {
 
 </script>
 
+<script th:inline="javascript">
+    // 在现有脚本后添加以下代码
+let isAuthorizing = false;
+
+async function startCopilotAuth() {
+    if (isAuthorizing) return;
+    isAuthorizing = true;
+
+    const authBtn = document.getElementById('startAuth');
+    authBtn.disabled = true;
+    authBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 获取授权码...';
+
+    try {
+        const response = await fetch('/copilot/auth');
+        const data = await response.json();
+
+        document.getElementById('userCodeDisplay').innerHTML = `
+            <h5>用户验证码：</h5>
+            <div class="alert alert-secondary py-1 px-3 d-inline-block">
+                <h2 class="mb-0">${data.userCode}</h2>
+            </div>
+            <p class="mt-2 mb-0">请访问以下链接完成授权，授权成功后20秒自动进入聊天模式：</p>
+        `;
+
+        const link = document.getElementById('verificationLink');
+        link.href = data.verificationUri;
+        link.innerHTML = `<i class="fas fa-external-link-alt"></i> ${data.verificationUri}`;
+
+        document.getElementById('authStatus').style.display = 'block';
+        authBtn.style.display = 'none';
+
+       // 新增点击事件监听
+link.addEventListener('click', function(e) {
+    pollAuthStatus();  // 触发轮询
+    return true;
+});
+
+    } catch (error) {
+        showMessage("获取授权码失败：" + error.message, "authStatus", "userCodeDisplay");
+    } finally {
+        isAuthorizing = false;
+        authBtn.disabled = false;
+        authBtn.innerHTML = '<i class="fab fa-github mr-2"></i>授权GitHub账户';
+    }
+}
+
+async function pollAuthStatus() {
+const url = `/copilot/callback`;
+    const checkStatus = async () => {
+        try {
+            const response = await fetch(url);
+            if (response.status === 200) {
+                document.getElementById('authStatus').style.display = 'none';
+                document.getElementById('chatInterface').style.display = 'block';
+                return true;
+            }
+        } catch (e) {
+            console.error('授权状态检查失败:', e);
+        }
+        return false;
+    };
+
+    const interval = setInterval(async () => {
+        if (await checkStatus()) {
+            clearInterval(interval);
+        }
+    }, 20000);
+}
+
+async function sendMessage() {
+    const input = document.getElementById('chatInput');
+    const message = input.value.trim();
+    if (!message) return;
+
+    const chatWindow = document.querySelector('.chat-messages');
+
+    // 添加用户消息
+    chatWindow.innerHTML += `
+        <div class="alert alert-primary mb-2 p-2">
+            <strong>You:</strong> ${message}
+        </div>
+    `;
+
+    // 添加加载状态
+    chatWindow.innerHTML += `
+        <div class="alert alert-secondary mb-2 p-2">
+            <i class="fas fa-spinner fa-spin"></i> 思考中...
+        </div>
+    `;
+
+    try {
+        const response = await fetch('/copilot/chat', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ message })
+        });
+
+        const data = await response.json();
+
+        // 移除加载状态
+        chatWindow.lastElementChild.remove();
+
+        // 添加AI响应（支持Markdown渲染）
+        chatWindow.innerHTML += `
+            <div class="alert alert-success mb-2 p-2">
+                <strong>AI:</strong> ${marked.parse(data.response)}
+            </div>
+        `;
+
+    } catch (error) {
+        chatWindow.lastElementChild.remove();
+        chatWindow.innerHTML += `
+            <div class="alert alert-danger mb-2 p-2">
+                <strong>Error:</strong> ${error.message}
+            </div>
+        `;
+    }
+
+    input.value = '';
+    chatWindow.scrollTop = chatWindow.scrollHeight;
+}
+    async function startNewChat() {
+    try {
+        const response = await fetch('/copilot/new_chat', {
+            method: 'GET'
+        });
+        if (response.ok) {
+            document.querySelector('.chat-messages').innerHTML = '';
+            showMessage('已开启新对话，上下文历史已清除', 'chatInterface');
+        }
+    } catch (error) {
+        console.error('新对话创建失败:', error);
+        showMessage('新对话创建失败，请重试', 'chatInterface');
+    }
+}
+</script>
+
+<script th:inline="javascript">
+    // 在现有script标签中添加
+let knowledgeChatHistory = [];
+
+async function askQuestion() {
+    const input = document.getElementById('qaInput');
+    const message = input.value.trim();
+    if (!message) return;
+
+    const chatBox = document.querySelector('#qaInterface .chat-messages');
+
+    // 添加用户问题
+    chatBox.innerHTML += `
+        <div class="alert alert-primary mb-2">${message}</div>
+    `;
+
+    try {
+        const response = await fetch('/knowledge/ask', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({question: message})
+        });
+
+        const data = await response.json();
+        chatBox.innerHTML += `
+            <div class="alert alert-success mb-2">${data.answer}</div>
+        `;
+    } catch (error) {
+        chatBox.innerHTML += `
+            <div class="alert alert-danger mb-2">请求失败：${error.message}</div>
+        `;
+    }
+
+    input.value = '';
+    chatBox.scrollTop = chatBox.scrollHeight;
+}
+    // 在现有script标签中添加以下事件监听
+document.getElementById('knowledgeForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const files = document.getElementById('knowledgeFile').files;
+    const formData = new FormData();
+
+       // 修改FormData的键名
+ for (const file of files) { // 添加循环处理多个文件
+        const blob = new Blob([file], {
+            type: getMimeType(file.name)
+        });
+        formData.append('files', blob, file.name);
+    }
+
+    // 显示上传进度
+    const progressBar = document.querySelector('#uploadProgress .progress-bar');
+    const uploadProgress = document.getElementById('uploadProgress');
+    uploadProgress.style.display = 'block';
+    progressBar.style.width = '0%';
+
+
+
+function getMimeType(filename) {
+    const ext = filename.split('.').pop().toLowerCase();
+    return {
+        'txt': 'text/plain',
+        'md': 'text/markdown',
+        'pdf': 'application/pdf'
+    }[ext] || 'application/octet-stream';
+}
+    // 发送AJAX请求
+    fetch('/knowledge/upload', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => {
+        if (!response.ok) throw new Error('上传失败');
+        return response.json();
+    })
+    .then(data => {
+        progressBar.style.width = '100%';
+        setTimeout(() => uploadProgress.style.display = 'none', 2000);
+        alert('知识库构建成功！');
+    })
+    .catch(error => {
+        console.error('上传错误:', error);
+        progressBar.style.width = '100%';
+        progressBar.classList.add('bg-danger');
+        alert('上传失败: ' + error.message);
+    });
+});
+
+// 添加文件选择监听更新标签
+document.getElementById('knowledgeFile').addEventListener('change', function(e) {
+    const label = this.nextElementSibling;
+    label.textContent = this.files.length > 1 ?
+        `${this.files.length}个文件已选择` :
+        this.files[0].name;
+});
+</script>
 </body>
 </html>
